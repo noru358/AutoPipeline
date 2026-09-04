@@ -1,0 +1,6 @@
+[submodule "instatoon"]
+	path = instatoon
+	url = https://github.com/noru358/instatoon.git
+[submodule "talkshow"]
+	path = talkshow
+	url = https://github.com/noru358/talkshow.git
