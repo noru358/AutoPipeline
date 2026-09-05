@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/noru358/AutoPipeline/schemas/media_job.schema.json",
+  "title": "AutoPipeline Media-Conditioned Generation Job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "requirements",
+    "renderer",
+    "supplied"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requirement_id",
+          "role",
+          "media_type",
+          "source_id",
+          "conditioning",
+          "required"
+        ],
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "enum": [
+              "image",
+              "audio",
+              "video",
+              "other"
+            ]
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "conditioning": {
+            "enum": [
+              "MUST_SUPPLY_MEDIA",
+              "AUTHORITY_ONLY_ALLOWED"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "expected_hash": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "renderer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "renderer_id",
+        "supports_explicit_media_inputs",
+        "supported_media_types",
+        "supported_prompt_bindings"
+      ],
+      "properties": {
+        "renderer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supports_explicit_media_inputs": {
+          "type": "boolean"
+        },
+        "supported_media_types": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "image",
+              "audio",
+              "video",
+              "other"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "max_media_inputs": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "supported_prompt_bindings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "supplied": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requirement_id",
+          "source_id",
+          "media_type"
+        ],
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "enum": [
+              "image",
+              "audio",
+              "video",
+              "other"
+            ]
+          },
+          "input_handle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "actual_hash": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "prompt_binding": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
