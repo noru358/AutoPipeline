@@ -25,3 +25,20 @@ git clone --recurse-submodules <repo>
 
 Or after clone:
 git submodule update --init --recursive
+
+
+## Generic media-conditioning contract
+
+Any child generation step that depends on image/audio/video reference media must map its project-specific assets into the parent MEDIA_INPUT_CONTRACT model before generation.
+
+Parent runtime responsibilities:
+1. ingest child-declared media requirements;
+2. query renderer capability profile;
+3. collect actual supplied-media evidence;
+4. run generic media authorization;
+5. call renderer only after PASS.
+
+Child-specific filenames and role semantics stay in the child repository.
+The parent gate must remain asset-name-agnostic and project-agnostic.
+
+A child-specific guard may be stricter, but must not weaken MUST_SUPPLY_MEDIA.
