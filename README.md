@@ -15,3 +15,13 @@ git clone --recurse-submodules <repo>
 
 Restore:
 git submodule update --init --recursive
+
+
+## Generic generation preflight
+
+Cross-project media-conditioned generation is governed by:
+- MEDIA_INPUT_CONTRACT.md
+- schemas/media_job.schema.json
+- pipeline/media_gate.py
+
+Child projects declare requirements; renderer adapters declare capabilities; the generic gate authorizes only when required media is actually supplied.
