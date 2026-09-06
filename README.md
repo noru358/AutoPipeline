@@ -7,6 +7,7 @@ Child projects remain independent Git repositories and creative authorities.
 Current children:
 - instatoon -> noru358/instatoon
 - talkshow -> noru358/talkshow
+- jipbap -> noru358/jipbap
 
 Use Git submodules so this repository records the exact child commit combination without copying child history.
 
