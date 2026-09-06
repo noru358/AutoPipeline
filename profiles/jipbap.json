@@ -18,7 +18,13 @@
       "kind": "CAROUSEL",
       "status": "ACTIVE",
       "aspect_ratio": "4:5",
-      "delivery": "SEPARATE_FRAME_FILES"
+      "delivery": "SEPARATE_FRAME_FILES",
+      "cover_mode": "SEPARATE_REQUIRED",
+      "product_order": [
+        "COVER",
+        "BODY"
+      ],
+      "allow_external_cover_import": true
     },
     {
       "id": "vertical_motion",
@@ -51,29 +57,32 @@
       ]
     },
     "STORYBOARD": {
-      "intent": "Design sensory-route body beats, food-state transitions, meal-scene continuity, hands/utensils, focal areas, silent beats, and a separate product-cover brief.",
+      "intent": "Design sensory-route body beats, food-state transitions, meal-scene continuity, recurring-subject identity requirements, visual coverage/delta rhythm, high-risk interaction geometry, silent beats, and a separate mandatory product-cover brief.",
       "authority_refs": [
-        "FOOD_STATE_SYSTEM.md",
-        "MEAL_CONTEXT_SYSTEM.md"
-      ]
-    },
-    "ASSET_PRODUCTION": {
-      "intent": "Bind actual meal/style references and render physically/culturally coherent body states while preserving declared meal-scene state and per-shot deltas.",
-      "authority_refs": [
+        "CONTENT_SYSTEM.md",
         "FOOD_STATE_SYSTEM.md",
         "MEAL_CONTEXT_SYSTEM.md",
         "VISUAL_SYSTEM.md"
       ]
     },
+    "ASSET_PRODUCTION": {
+      "intent": "Bind actual style/identity media and render only the current body state with episode-local subject identity, declared coverage, physically coherent anatomy/contact geometry, meal-scene continuity, and cross-domain illustration coherence.",
+      "authority_refs": [
+        "FOOD_STATE_SYSTEM.md",
+        "MEAL_CONTEXT_SYSTEM.md",
+        "VISUAL_SYSTEM.md",
+        "PRODUCTION_PROTOCOL.md"
+      ]
+    },
     "COMPOSITION": {
-      "intent": "Keep body lettering editable, protect the food focal area, and assemble the separate Instagram cover from the child cover template using reuse-first approved assets.",
+      "intent": "Keep body lettering editable, protect the food focal area, and acquire/assemble the separate mandatory Instagram cover by BODY reuse, dedicated hero, or registered external import before finalization.",
       "authority_refs": [
         "VISUAL_SYSTEM.md",
         "VOICE_SYSTEM.md"
       ]
     },
     "QC": {
-      "intent": "Check food state, meal-scene/table continuity, contact geometry, meal context, sensory readability, cover/body role separation, and lettering separately.",
+      "intent": "Run hard identity/style-domain/anatomy/contact and food-state checks first, then viewer-perceived whole-sequence coverage/redundancy QC; require the separate cover slot before final carousel completion and repair only the minimum invalid scope.",
       "authority_refs": [
         "PRODUCTION_PROTOCOL.md",
         "VISUAL_SYSTEM.md"
