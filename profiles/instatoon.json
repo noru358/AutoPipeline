@@ -7,7 +7,9 @@
     "SOURCE_STORY_PIPELINE.md",
     "STYLE_LOCK.md",
     "VISUAL_GRAMMAR.md",
-    "GENERATION_PROTOCOL.md"
+    "GENERATION_PROTOCOL.md",
+    "MASTER_PROMPTS.md",
+    "REFERENCE_SET.md"
   ],
   "episode_id_pattern": "^E[0-9]{3,}$",
   "products": [
@@ -29,31 +31,49 @@
   "stage_overrides": {
     "WORK_RESEARCH": {
       "intent": "Study complete works for hook, dialogue-response rhythm, visual hierarchy and ending.",
-      "authority_refs": ["VISUAL_GRAMMAR.md"]
+      "authority_refs": [
+        "VISUAL_GRAMMAR.md"
+      ]
     },
     "RADAR": {
       "intent": "Find traceable human-seeded anecdotes and preserve provenance.",
-      "authority_refs": ["SOURCE_STORY_PIPELINE.md"]
+      "authority_refs": [
+        "SOURCE_STORY_PIPELINE.md"
+      ]
     },
     "EDITORIAL": {
       "intent": "Turn source material into a distinct story-empathy experience without forcing recurring cast.",
-      "authority_refs": ["SOURCE_STORY_PIPELINE.md"]
+      "authority_refs": [
+        "SOURCE_STORY_PIPELINE.md"
+      ]
     },
     "STORYBOARD": {
       "intent": "Design slide roles, dialogue space, reactions and visual information ownership.",
-      "authority_refs": ["VISUAL_GRAMMAR.md"]
+      "authority_refs": [
+        "VISUAL_GRAMMAR.md"
+      ]
     },
     "ASSET_PRODUCTION": {
-      "intent": "Use actual style media and generate only the required text-free frame assets.",
-      "authority_refs": ["STYLE_LOCK.md", "GENERATION_PROTOCOL.md"]
+      "intent": "Bind actual style/reference media, compile the canonical production prompt, and generate only the current text-free frame under the approved visual contract.",
+      "authority_refs": [
+        "STYLE_LOCK.md",
+        "MASTER_PROMPTS.md",
+        "GENERATION_PROTOCOL.md",
+        "REFERENCE_SET.md"
+      ]
     },
     "COMPOSITION": {
       "intent": "Keep text, speech bubbles and messenger UI editable and separate from raster art.",
-      "authority_refs": ["VISUAL_GRAMMAR.md"]
+      "authority_refs": [
+        "VISUAL_GRAMMAR.md"
+      ]
     },
     "QC": {
-      "intent": "Separate deterministic defects, visual defects and taste decisions.",
-      "authority_refs": ["GENERATION_PROTOCOL.md"]
+      "intent": "Run hard frame/identity/geometry checks first, then sequence-level redundancy and semantic-acting review, quarantining rejected outputs and repairing only the minimum invalid scope.",
+      "authority_refs": [
+        "GENERATION_PROTOCOL.md",
+        "VISUAL_GRAMMAR.md"
+      ]
     }
   }
 }
