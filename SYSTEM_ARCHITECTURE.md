@@ -108,7 +108,23 @@ Apply feedback at the narrowest correct scope:
 This is how the system preserves detail without growing a universal prompt that
 must remember every past episode.
 
-## 6. Context contamination and handoff
+## 6. Shared visual QC envelope
+
+Cross-project automation may not dictate a project's art style, emotional voice or food/story semantics, but it does own a minimal quality envelope for generated sequential assets.
+
+Shared invariants:
+- hard output/identity/geometry contracts are checked before subjective style or taste review;
+- a complete sequential raster set receives sequence-level QC before its user gate, not only independent frame checks;
+- sequence review is viewer-perceived and beat-aware: repeated camera side/height, shot distance, subject/body orientation or gaze that comes from renderer defaults is a defect when a story-valid alternative exists;
+- fixed left/right/front quotas are forbidden as a substitute for visual direction;
+- the declared semantic intent of a beat must survive rendering; beautification, cuteness, dramatization or flattening that changes the intended meaning is a QC failure;
+- high-risk body/hand/prop/contact geometry receives explicit scrutiny appropriate to the child domain;
+- rejected outputs are quarantined from later anchors, repair sources and continuity seeds;
+- repair scope is the minimum invalid subset; one bad frame does not justify regenerating an approved sequence by default.
+
+Child repositories own the domain-specific implementation of these checks. For example, a story project may inspect emotional acting/anatomy while a food project inspects hand/utensil/contact and food-state geometry. The parent owns only the invariant that such declared semantics and geometry must be checked.
+
+## 7. Context contamination and handoff
 
 Context continuity is a top-level operating constraint. Stop the active creative
 or implementation task when any configured contamination signal is observed.
@@ -123,10 +139,11 @@ Before recommending a new session:
 5. state clearly that a new session is required because context confidence has
    fallen below the level needed for safe continuation.
 
-The handoff fields in `config/system_policy.json` are mandatory. A new session
-must re-read repository authority and validate the system contract before work.
+Once a configured contamination threshold is crossed, the old context is **sticky-unsafe** for production. A later apparently good output in that same context does not rehabilitate it. Post-threshold outputs are quarantined until a clean context reproduces/revalidates the target under restored repository authority.
 
-## 7. Validation and change control
+The handoff fields in `config/system_policy.json` are mandatory, including quarantined-output scope. A new session must re-read repository authority and validate the system contract before work.
+
+## 8. Validation and change control
 
 Run from the superproject root:
 
@@ -135,9 +152,7 @@ python -m pipeline.system_gate
 python -m unittest discover -s pipeline -p 'test_*.py'
 ```
 
-The system gate checks the zero-paid-fallback policy, continuity action,
-canonical stage ordering, content-family coverage, profile references and
-materialized creative authority files.
+The system gate checks the zero-paid-fallback policy, sticky continuity/handoff contract, shared quality-policy invariants, canonical stage ordering, content-family coverage, profile references and materialized creative authority files.
 
 Change order:
 
@@ -146,7 +161,7 @@ Change order:
 3. update shared policy/code only for a genuine cross-project invariant;
 4. verify child commits, then advance superproject submodule pointers.
 
-## 8. Implementation milestones
+## 9. Implementation milestones
 
 The subscription-first artifact bridge now has an executable fail-closed dispatch baseline:
 
