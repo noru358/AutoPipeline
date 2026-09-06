@@ -28,7 +28,11 @@ Each generation job materializes media requirements with:
 - source_id: repository-relative path, object-store ID, connector ID, or another stable identifier;
 - conditioning: MUST_SUPPLY_MEDIA | AUTHORITY_ONLY_ALLOWED;
 - required: boolean;
-- expected_hash: optional integrity hash.
+- expected_hash: optional integrity hash;
+- coverage_scope: optional list of visual/information domains that the source actually depicts or is authorized to control (for example person_style, food_style, background_style, character_identity, layout);
+- allowed_influence: optional narrower list of attributes the child permits this reference to control.
+
+A reference must not be treated as authority for domains it does not cover. A person-only style sheet cannot silently become food, background, camera, or composition authority merely because it is the only supplied image.
 
 The engine treats role as opaque metadata. It must not encode child-specific filenames.
 
@@ -68,7 +72,8 @@ Block the generation call when any required item fails one of these:
 - supplied source does not match the declared source;
 - expected hash mismatches;
 - provider media-count limit would be exceeded;
-- prompt-binding mode is not allowed by the child job contract.
+- prompt-binding mode is not allowed by the child job contract;
+- the job asks a supplied reference to control a domain outside its declared coverage_scope / allowed_influence.
 
 Do not downgrade MUST_SUPPLY_MEDIA to authority-only because of convenience, tool habit, credits, or connector limitations.
 
