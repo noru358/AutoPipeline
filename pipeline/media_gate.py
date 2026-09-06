@@ -167,6 +167,40 @@ def authorize(job: dict) -> str:
         if expected_hash:
             _require(evidence.get("actual_hash") == expected_hash, f"{rid}: supplied media hash mismatch")
 
+        coverage_scope = req.get("coverage_scope")
+        allowed_influence = req.get("allowed_influence")
+        requested_influence = req.get("requested_influence")
+
+        if coverage_scope is not None:
+            _require(
+                isinstance(coverage_scope, list) and coverage_scope
+                and all(isinstance(x, str) and x.strip() for x in coverage_scope),
+                f"{rid}: coverage_scope must be a non-empty string list",
+            )
+        if allowed_influence is not None:
+            _require(
+                isinstance(allowed_influence, list) and allowed_influence
+                and all(isinstance(x, str) and x.strip() for x in allowed_influence),
+                f"{rid}: allowed_influence must be a non-empty string list",
+            )
+        if requested_influence is not None:
+            _require(
+                isinstance(requested_influence, list) and requested_influence
+                and all(isinstance(x, str) and x.strip() for x in requested_influence),
+                f"{rid}: requested_influence must be a non-empty string list",
+            )
+            requested = set(requested_influence)
+            if coverage_scope is not None:
+                _require(
+                    requested <= set(coverage_scope),
+                    f"{rid}: requested influence exceeds reference coverage_scope",
+                )
+            if allowed_influence is not None:
+                _require(
+                    requested <= set(allowed_influence),
+                    f"{rid}: requested influence exceeds allowed_influence",
+                )
+
     return "AUTHORIZED"
 
 
