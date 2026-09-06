@@ -47,3 +47,52 @@ python -m unittest discover -s pipeline -p 'test_*.py'
 ```
 
 The initial policy uses user-triggered ChatGPT subscription work, sets additional paid AI budget to KRW 0, disables paid fallback, and requires suspend/resume when subscription usage is unavailable.
+
+## Durable artifact bridge
+
+`pipeline/artifact_bridge.py` is the first executable subscription-first runtime layer.
+It does not call a model API. It creates a stage work packet, snapshots the exact
+creative authority used by that stage, copies actual input/result bytes into the
+packet package, records SHA-256 identity, binds explicit user approval to one
+result hash, and verifies all of it again before resume.
+
+The runtime packet format is `schemas/work_packet.schema.json`. Generated
+workspaces are local runtime data and are ignored by Git.
+
+Example:
+
+```bash
+python -m pipeline.artifact_bridge init \
+  --profile profiles/instatoon.json \
+  --episode E001 \
+  --stage ASSET_PRODUCTION \
+  --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json
+
+python -m pipeline.artifact_bridge add-input \
+  --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json \
+  --file /path/to/reference.png \
+  --role style_reference \
+  --media-type image
+
+python -m pipeline.artifact_bridge dispatched \
+  --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json
+
+python -m pipeline.artifact_bridge add-result \
+  --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json \
+  --file /path/to/chatgpt-result.png \
+  --role representative_frame \
+  --media-type image
+
+python -m pipeline.artifact_bridge approve \
+  --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json \
+  --asset-id result:representative_frame:<hash-prefix>
+
+python -m pipeline.artifact_bridge verify \
+  --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json
+```
+
+An approved packet is locked against replacement result registration. Resume
+fails closed if registered bytes or the snapshotted creative authority changed.
+Direct ChatGPT-to-runtime artifact transfer remains an integration to verify;
+until then the packet explicitly records manual import rather than pretending an
+unattended subscription API exists.
