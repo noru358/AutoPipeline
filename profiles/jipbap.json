@@ -57,7 +57,7 @@
       ]
     },
     "STORYBOARD": {
-      "intent": "Design appetite/sensory beats, observable visual cues, food-state transitions, entity visibility allowlists, background scope, recurring-subject identity requirements, visual delta rhythm, high-risk interaction geometry, and a separate mandatory product-cover brief.",
+      "intent": "Design the PROXY_EATER appetite arc, resolve BODY_S01 vs non-public A00 visual-anchor route, then define sensory/observable cues, food-state transitions, entity visibility allowlists, background scope, visual delta rhythm and high-risk interaction geometry.",
       "authority_refs": [
         "CONTENT_SYSTEM.md",
         "FOOD_STATE_SYSTEM.md",
@@ -66,7 +66,7 @@
       ]
     },
     "ASSET_PRODUCTION": {
-      "intent": "Bind actual domain-scoped style/identity media and render only the current shot contract with observable appetite cues, entity allowlists, physically coherent anatomy/contact geometry, meal-scene continuity, and cross-domain illustration coherence.",
+      "intent": "Use the resolved visual-anchor route, bind actual domain-scoped media, require post-dispatch explicit-media receipt proof, and render only the current shot contract with observable appetite cues, entity allowlists, anatomy/contact geometry and meal continuity.",
       "authority_refs": [
         "FOOD_STATE_SYSTEM.md",
         "MEAL_CONTEXT_SYSTEM.md",
