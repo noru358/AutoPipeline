@@ -4,3 +4,6 @@
 [submodule "talkshow"]
 	path = talkshow
 	url = https://github.com/noru358/talkshow.git
+[submodule "jipbap"]
+	path = jipbap
+	url = https://github.com/noru358/jipbap.git
