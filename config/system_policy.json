@@ -19,7 +19,8 @@
       "retired decision reappears as active",
       "conversation claims conflict with repository authority",
       "same correction repeats without a new diagnosis",
-      "current artifact identity or approval scope becomes uncertain"
+      "current artifact identity or approval scope becomes uncertain",
+      "same hard output contract fails twice in one conversational render context"
     ],
     "handoff_required_fields": [
       "verified_repository_heads",
@@ -28,8 +29,11 @@
       "active_decisions",
       "approved_artifacts",
       "open_blockers",
-      "next_single_action"
-    ]
+      "next_single_action",
+      "quarantined_outputs"
+    ],
+    "unsafe_context_is_sticky": true,
+    "post_threshold_outputs_quarantined": true
   },
   "canonical_stages": [
     {
@@ -94,5 +98,15 @@
     "story_and_storyboard_drafting",
     "image_generation_when_available",
     "visual_review_when_actual_media_is_available"
-  ]
+  ],
+  "quality_policy": {
+    "hard_contract_qc_precedes_subjective_qc": true,
+    "sequence_qc_before_raster_user_gate": true,
+    "fixed_direction_quotas_forbidden": true,
+    "viewer_perceived_redundancy_review": true,
+    "declared_semantic_intent_qc": true,
+    "high_risk_interaction_geometry_qc": true,
+    "rejected_output_quarantine": true,
+    "minimal_repair_scope": true
+  }
 }
