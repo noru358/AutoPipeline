@@ -11,6 +11,8 @@ from pipeline.artifact_bridge import (
     mark_awaiting_result_import,
     register_input_asset,
     register_result_asset,
+    resume_suspended_packet,
+    suspend_packet,
     verify_packet,
 )
 
@@ -129,6 +131,7 @@ class ArtifactBridgeTests(unittest.TestCase):
 
     def test_explicit_user_approval_locks_hash_and_blocks_replacement(self):
         self._create()
+        mark_awaiting_result_import(self.packet)
         result_file = self.root / "result.png"
         result_file.write_bytes(b"approved-result")
         result_asset = register_result_asset(
@@ -162,8 +165,19 @@ class ArtifactBridgeTests(unittest.TestCase):
                 media_type="image",
             )
 
+        late_input = self.root / "late-input.png"
+        late_input.write_bytes(b"late")
+        with self.assertRaises(BridgeError):
+            register_input_asset(
+                packet_path=self.packet,
+                source_path=late_input,
+                role="late_reference",
+                media_type="image",
+            )
+
     def test_resume_fails_closed_if_registered_asset_bytes_change(self):
         self._create()
+        mark_awaiting_result_import(self.packet)
         result_file = self.root / "result.png"
         result_file.write_bytes(b"result-v1")
         result_asset = register_result_asset(
@@ -184,6 +198,15 @@ class ArtifactBridgeTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(BridgeError, "authority drift"):
             verify_packet(self.packet, repo_root=self.root)
+
+    def test_suspend_resume_restores_exact_prior_status_after_verification(self):
+        self._create()
+        mark_awaiting_result_import(self.packet)
+        suspended = suspend_packet(self.packet, "subscription limit")
+        self.assertEqual(suspended["status"], "SUSPENDED")
+        resumed = resume_suspended_packet(self.packet, repo_root=self.root)
+        self.assertEqual(resumed["status"], "AWAITING_RESULT_IMPORT")
+        self.assertEqual(resumed["next_action"]["type"], "IMPORT_CHATGPT_RESULT")
 
     def test_invalid_episode_id_is_rejected(self):
         with self.assertRaises(BridgeError):
