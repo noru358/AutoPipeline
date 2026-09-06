@@ -43,6 +43,24 @@ class SystemGateTests(unittest.TestCase):
         with self.assertRaises(SystemGateError):
             validate_system(policy, self.profiles)
 
+    def test_requires_sticky_unsafe_context(self):
+        policy = copy.deepcopy(self.policy)
+        policy["continuity_policy"]["unsafe_context_is_sticky"] = False
+        with self.assertRaises(SystemGateError):
+            validate_system(policy, self.profiles)
+
+    def test_requires_quarantined_outputs_in_handoff(self):
+        policy = copy.deepcopy(self.policy)
+        policy["continuity_policy"]["handoff_required_fields"].remove("quarantined_outputs")
+        with self.assertRaises(SystemGateError):
+            validate_system(policy, self.profiles)
+
+    def test_requires_shared_sequence_quality_policy(self):
+        policy = copy.deepcopy(self.policy)
+        policy["quality_policy"]["sequence_qc_before_raster_user_gate"] = False
+        with self.assertRaises(SystemGateError):
+            validate_system(policy, self.profiles)
+
     def test_blocks_unknown_project_stage(self):
         profiles = copy.deepcopy(self.profiles)
         profiles[0]["stage_overrides"]["ONE_OFF_FIX"] = {
