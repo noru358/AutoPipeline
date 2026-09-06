@@ -66,6 +66,18 @@ python -m pipeline.compositor \
 
 Use `--project-root jipbap` for the food project. The child owns asset categories and visual semantics; the parent compositor owns byte verification, transforms, layer order and a composition receipt.
 
+### Deterministic lettering
+
+Meaning-bearing copy remains editable source data. `pipeline/lettering.py` renders a
+versioned JSON lettering plan into a deterministic PNG preview and hash receipt.
+
+- `PIL_DEFAULT` is allowed only for `CALIBRATION_PLACEHOLDER` plans.
+- Production plans must bind a project font file by path and SHA-256.
+- Base artwork, when supplied, is also SHA-256 verified before lettering.
+- Text line breaks and positions are explicit plan data rather than model-generated pixels.
+
+Schema: `schemas/lettering_plan.schema.json`.
+
 ## Durable artifact bridge
 
 `pipeline/artifact_bridge.py` is the first executable subscription-first runtime layer.
