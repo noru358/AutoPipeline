@@ -8,7 +8,7 @@
     "schema_version",
     "packet_id",
     "project_id",
-    "episode_id",
+    "work_scope",
     "stage_id",
     "status",
     "state_revision",
@@ -23,7 +23,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "const": "1.1"
     },
     "packet_id": {
       "type": "string",
@@ -288,6 +288,12 @@
         "READY_FOR_CHATGPT",
         "AWAITING_RESULT_IMPORT",
         "RESULT_REGISTERED"
+      ]
+    },
+    "work_scope": {
+      "enum": [
+        "PROJECT",
+        "EPISODE"
       ]
     }
   }
