@@ -39,6 +39,7 @@ class ArtifactBridgeTests(unittest.TestCase):
                 "asset_production_requires_authorized_packet": True,
                 "asset_production_requires_bound_media_evidence": True,
                 "asset_production_requires_visual_contract": True,
+                "asset_production_requires_dispatch_receipt": True,
             },
             "canonical_stages": [
                 {"id": "EDITORIAL", "order": 1, "owner": "CHATGPT_ASSISTED"},
@@ -146,6 +147,30 @@ class ArtifactBridgeTests(unittest.TestCase):
         job_path.write_text(json.dumps(job), encoding="utf-8")
         return authorize_asset_dispatch(packet_path=self.packet, job_path=job_path)
 
+    def _receipt_path(self):
+        packet = load_packet(self.packet)
+        job = packet["dispatch_authorization"]["job"]
+        binding = job["supplied"][0]
+        receipt = {
+            "job_id": job["job_id"],
+            "renderer_id": job["renderer"]["renderer_id"],
+            "explicit_media_binding_confirmed": True,
+            "bindings": [
+                {
+                    "requirement_id": binding["requirement_id"],
+                    "asset_id": binding["asset_id"],
+                    "source_id": binding["source_id"],
+                    "media_type": binding["media_type"],
+                    "actual_hash": binding["actual_hash"],
+                    "binding_method": "EXPLICIT_MEDIA_INPUT",
+                    "input_handle": binding["input_handle"],
+                }
+            ],
+        }
+        path = self.root / "dispatch-receipt.json"
+        path.write_text(json.dumps(receipt), encoding="utf-8")
+        return path
+
     def test_create_packet_snapshots_only_stage_authority(self):
         packet = self._create()
         self.assertEqual(packet["status"], "READY_FOR_CHATGPT")
@@ -174,7 +199,7 @@ class ArtifactBridgeTests(unittest.TestCase):
         self.assertEqual(stored_input.read_bytes(), b"actual-style-bytes")
 
         self._authorize(input_asset)
-        mark_awaiting_result_import(self.packet)
+        mark_awaiting_result_import(self.packet, receipt_path=self._receipt_path())
         result_file = self.root / "result.png"
         result_file.write_bytes(b"chatgpt-result")
         result_asset = register_result_asset(
@@ -194,7 +219,7 @@ class ArtifactBridgeTests(unittest.TestCase):
     def test_explicit_user_approval_locks_hash_and_blocks_replacement(self):
         self._create()
         self._authorize()
-        mark_awaiting_result_import(self.packet)
+        mark_awaiting_result_import(self.packet, receipt_path=self._receipt_path())
         result_file = self.root / "result.png"
         result_file.write_bytes(b"approved-result")
         result_asset = register_result_asset(
@@ -241,7 +266,7 @@ class ArtifactBridgeTests(unittest.TestCase):
     def test_resume_fails_closed_if_registered_asset_bytes_change(self):
         self._create()
         self._authorize()
-        mark_awaiting_result_import(self.packet)
+        mark_awaiting_result_import(self.packet, receipt_path=self._receipt_path())
         result_file = self.root / "result.png"
         result_file.write_bytes(b"result-v1")
         result_asset = register_result_asset(
@@ -266,7 +291,7 @@ class ArtifactBridgeTests(unittest.TestCase):
     def test_suspend_resume_restores_exact_prior_status_after_verification(self):
         self._create()
         self._authorize()
-        mark_awaiting_result_import(self.packet)
+        mark_awaiting_result_import(self.packet, receipt_path=self._receipt_path())
         suspended = suspend_packet(self.packet, "subscription limit")
         self.assertEqual(suspended["status"], "SUSPENDED")
         resumed = resume_suspended_packet(self.packet, repo_root=self.root)
@@ -277,6 +302,12 @@ class ArtifactBridgeTests(unittest.TestCase):
     def test_asset_production_cannot_dispatch_before_authorization(self):
         self._create()
         with self.assertRaisesRegex(BridgeError, "requires DISPATCH_AUTHORIZED"):
+            mark_awaiting_result_import(self.packet)
+
+    def test_asset_production_requires_post_dispatch_receipt(self):
+        self._create()
+        self._authorize()
+        with self.assertRaisesRegex(BridgeError, "post-dispatch media binding receipt"):
             mark_awaiting_result_import(self.packet)
 
     def test_authorization_binds_registered_input_hash(self):
