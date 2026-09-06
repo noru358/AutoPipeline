@@ -125,11 +125,11 @@ must remember every past episode.
 
 ## 6. Shared visual QC envelope
 
-Cross-project automation may not dictate a project's art style, emotional voice or food/story semantics, but it does own a minimal quality envelope for generated sequential assets.
+Cross-project automation may not dictate a project's art style, emotional voice or food/story semantics, but it does own a minimal quality envelope for sequential visual outputs and their approved source assets.
 
 Shared invariants:
 - hard output/identity/geometry contracts are checked before subjective style or taste review;
-- a complete sequential raster set receives sequence-level QC before its user gate, not only independent frame checks;
+- a complete composed art sequence receives sequence-level QC before final art approval/export, not only independent asset or frame checks;
 - sequence review is viewer-perceived and beat-aware: repeated camera side/height, shot distance, subject/body orientation or gaze that comes from renderer defaults is a defect when a story-valid alternative exists;
 - fixed left/right/front quotas are forbidden as a substitute for visual direction;
 - the declared semantic intent of a beat must survive rendering; beautification, cuteness, dramatization or flattening that changes the intended meaning is a QC failure;
