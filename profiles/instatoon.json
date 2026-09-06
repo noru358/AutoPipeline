@@ -72,7 +72,7 @@
       ]
     },
     "QC": {
-      "intent": "Run hard frame/identity/geometry checks first, then sequence-level redundancy and semantic-acting review, quarantining rejected outputs and repairing only the minimum invalid scope.",
+      "intent": "Validate approved asset identity/geometry and composed-frame semantics first, then sequence-level redundancy/acting and editable text/UI layout; repair only the minimum invalid dependency.",
       "authority_refs": [
         "GENERATION_PROTOCOL.md",
         "VISUAL_GRAMMAR.md"
