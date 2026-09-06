@@ -34,6 +34,11 @@ def base_job():
             }
         ],
         "prompt_binding":"EXPLICIT",
+        "visual_contract":{
+            "visual_information_owner":"PHYSICAL_ACTION",
+            "screen_bearing_prop":False,
+            "screen_contract":None,
+        },
     }
 
 
@@ -78,6 +83,60 @@ class MediaGateTests(unittest.TestCase):
             "source_id":"child/assets/voice.wav",
         })
         self.assertEqual(authorize(job), "AUTHORIZED")
+
+
+    def test_blocks_impossible_front_camera_phone_visibility(self):
+        job=base_job()
+        job["visual_contract"]={
+            "visual_information_owner":"PHYSICAL_ACTION",
+            "screen_bearing_prop":True,
+            "screen_contract":{
+                "prop_id":"phone",
+                "display_surface":"FRONT",
+                "subject_screen_relation":"LOOKING_AT_SCREEN",
+                "camera_screen_relation":"FRONT_OF_SUBJECT",
+                "viewer_screen_visibility":"REQUIRED",
+                "ui_delivery_mode":"RASTER_SHELL_ONLY",
+                "geometry_rule":"subject reads private phone while camera faces subject",
+            },
+        }
+        with self.assertRaisesRegex(GateError, "impossible shared visibility"):
+            authorize(job)
+
+    def test_allows_over_shoulder_shared_phone_visibility(self):
+        job=base_job()
+        job["visual_contract"]={
+            "visual_information_owner":"SCREEN_INFORMATION",
+            "screen_bearing_prop":True,
+            "screen_contract":{
+                "prop_id":"phone",
+                "display_surface":"FRONT",
+                "subject_screen_relation":"LOOKING_AT_SCREEN",
+                "camera_screen_relation":"OVER_SHOULDER",
+                "viewer_screen_visibility":"REQUIRED",
+                "ui_delivery_mode":"VECTOR_OVERLAY",
+                "geometry_rule":"camera shares the subject side of the display plane",
+            },
+        }
+        self.assertEqual(authorize(job), "AUTHORIZED")
+
+    def test_screen_information_requires_viewer_visibility(self):
+        job=base_job()
+        job["visual_contract"]={
+            "visual_information_owner":"SCREEN_INFORMATION",
+            "screen_bearing_prop":True,
+            "screen_contract":{
+                "prop_id":"phone",
+                "display_surface":"FRONT",
+                "subject_screen_relation":"LOOKING_AT_SCREEN",
+                "camera_screen_relation":"OVER_SHOULDER",
+                "viewer_screen_visibility":"OPTIONAL",
+                "ui_delivery_mode":"VECTOR_OVERLAY",
+                "geometry_rule":"screen information is meant for audience",
+            },
+        }
+        with self.assertRaises(GateError):
+            authorize(job)
 
 
 if __name__ == "__main__":
