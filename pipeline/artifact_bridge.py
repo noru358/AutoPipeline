@@ -237,6 +237,9 @@ def create_packet(
     _require(execution.get("allow_paid_fallback") is False, "paid fallback must be disabled")
     _require(execution.get("user_trigger_required") is True, "user trigger must be required")
     _require(execution.get("unattended_subscription_invocation") is False, "unattended subscription use is forbidden")
+    _require(execution.get("asset_production_requires_authorized_packet") is True, "asset production authorization policy must be enabled")
+    _require(execution.get("asset_production_requires_bound_media_evidence") is True, "bound media evidence policy must be enabled")
+    _require(execution.get("asset_production_requires_visual_contract") is True, "visual contract policy must be enabled")
 
     stage_ids = [stage.get("id") for stage in policy.get("canonical_stages", [])]
     _require(stage_id in stage_ids, f"unknown canonical stage: {stage_id}")
