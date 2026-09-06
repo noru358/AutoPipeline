@@ -41,6 +41,7 @@ def validate_policy(policy: dict) -> list[str]:
         "canonical_stages",
         "program_responsibilities",
         "chatgpt_responsibilities",
+        "quality_policy",
     }
     _require(required <= policy.keys(), f"system policy missing: {sorted(required - policy.keys())}")
     _require(policy["schema_version"] == "1.0", "unsupported system policy version")
@@ -62,11 +63,28 @@ def validate_policy(policy: dict) -> list[str]:
         "context contamination must trigger a new-session handoff",
     )
     _require(bool(continuity.get("contamination_signals")), "context contamination signals are required")
+    _require(continuity.get("unsafe_context_is_sticky") is True, "unsafe render context must remain sticky until clean handoff")
+    _require(continuity.get("post_threshold_outputs_quarantined") is True, "post-threshold outputs must be quarantined")
     handoff_fields = set(continuity.get("handoff_required_fields", []))
     _require(
-        {"verified_repository_heads", "active_decisions", "open_blockers", "next_single_action"} <= handoff_fields,
+        {"verified_repository_heads", "active_decisions", "open_blockers", "next_single_action", "quarantined_outputs"} <= handoff_fields,
         "handoff is missing minimum continuity fields",
     )
+
+    quality = policy["quality_policy"]
+    required_quality = {
+        "hard_contract_qc_precedes_subjective_qc",
+        "sequence_qc_before_raster_user_gate",
+        "fixed_direction_quotas_forbidden",
+        "viewer_perceived_redundancy_review",
+        "declared_semantic_intent_qc",
+        "high_risk_interaction_geometry_qc",
+        "rejected_output_quarantine",
+        "minimal_repair_scope",
+    }
+    _require(isinstance(quality, dict), "quality_policy must be an object")
+    _require(required_quality <= quality.keys(), f"quality_policy missing: {sorted(required_quality - quality.keys())}")
+    _require(all(quality.get(key) is True for key in required_quality), "all shared quality-policy invariants must be enabled")
 
     stages = policy["canonical_stages"]
     _require(isinstance(stages, list) and stages, "canonical stages must be a non-empty list")
