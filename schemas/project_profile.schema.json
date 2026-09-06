@@ -14,25 +14,94 @@
     "stage_overrides"
   ],
   "properties": {
-    "profile_version": {"const": "1.0"},
-    "project_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]+$"},
-    "content_family": {"enum": ["STORY_EMPATHY", "OBSERVATION_SENSORY"]},
-    "creative_authority_root": {"type": "string", "minLength": 1},
-    "creative_authority_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
-    "episode_id_pattern": {"type": "string", "minLength": 1},
+    "profile_version": {
+      "const": "1.0"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]+$"
+    },
+    "content_family": {
+      "enum": [
+        "STORY_EMPATHY",
+        "OBSERVATION_SENSORY"
+      ]
+    },
+    "creative_authority_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "creative_authority_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "episode_id_pattern": {
+      "type": "string",
+      "minLength": 1
+    },
     "products": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "kind", "status", "aspect_ratio", "delivery"],
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "aspect_ratio",
+          "delivery"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "kind": {"enum": ["CAROUSEL", "VERTICAL_MOTION"]},
-          "status": {"enum": ["ACTIVE", "PLANNED", "DISABLED"]},
-          "aspect_ratio": {"type": "string", "pattern": "^[1-9][0-9]*:[1-9][0-9]*$"},
-          "delivery": {"enum": ["SEPARATE_FRAME_FILES", "VIDEO_FILE"]}
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "CAROUSEL",
+              "VERTICAL_MOTION"
+            ]
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "PLANNED",
+              "DISABLED"
+            ]
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*:[1-9][0-9]*$"
+          },
+          "delivery": {
+            "enum": [
+              "SEPARATE_FRAME_FILES",
+              "VIDEO_FILE"
+            ]
+          },
+          "cover_mode": {
+            "enum": [
+              "SEPARATE_REQUIRED"
+            ]
+          },
+          "product_order": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "allow_external_cover_import": {
+            "type": "boolean"
+          }
         }
       }
     },
@@ -41,10 +110,24 @@
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["intent", "authority_refs"],
+        "required": [
+          "intent",
+          "authority_refs"
+        ],
         "properties": {
-          "intent": {"type": "string", "minLength": 1},
-          "authority_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true}
+          "intent": {
+            "type": "string",
+            "minLength": 1
+          },
+          "authority_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
         }
       }
     }
