@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AutoPipeline Lettering Plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "plan_id",
+    "purpose",
+    "canvas",
+    "base_image",
+    "text_layers"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "plan_id": {"type": "string", "minLength": 1},
+    "purpose": {
+      "enum": ["CALIBRATION_PLACEHOLDER", "PRODUCTION"]
+    },
+    "canvas": {
+      "type": "object",
+      "required": ["width", "height", "background_rgba"],
+      "properties": {
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1},
+        "background_rgba": {
+          "$ref": "#/$defs/rgba"
+        }
+      },
+      "additionalProperties": false
+    },
+    "base_image": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["path", "sha256"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "sha256": {"$ref": "#/$defs/sha256"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "text_layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "layer_id",
+          "lines",
+          "x",
+          "y",
+          "font",
+          "fill_rgba"
+        ],
+        "properties": {
+          "layer_id": {"type": "string", "minLength": 1},
+          "z": {"type": "integer"},
+          "lines": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string"}
+          },
+          "x": {"type": "integer"},
+          "y": {"type": "integer"},
+          "anchor": {"enum": ["LEFT", "CENTER", "RIGHT"]},
+          "font": {
+            "type": "object",
+            "required": ["mode", "size"],
+            "properties": {
+              "mode": {"enum": ["PIL_DEFAULT", "PROJECT_FILE"]},
+              "size": {"type": "integer", "minimum": 1},
+              "path": {"type": "string", "minLength": 1},
+              "sha256": {"$ref": "#/$defs/sha256"}
+            },
+            "additionalProperties": false
+          },
+          "fill_rgba": {"$ref": "#/$defs/rgba"},
+          "stroke_width": {"type": "integer", "minimum": 0},
+          "stroke_fill_rgba": {
+            "oneOf": [
+              {"type": "null"},
+              {"$ref": "#/$defs/rgba"}
+            ]
+          },
+          "line_spacing": {"type": "integer", "minimum": 0},
+          "box": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {"enum": ["NONE", "RECT"]},
+              "padding": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {"type": "integer", "minimum": 0}
+              },
+              "fill_rgba": {"$ref": "#/$defs/rgba"},
+              "outline_rgba": {
+                "oneOf": [
+                  {"type": "null"},
+                  {"$ref": "#/$defs/rgba"}
+                ]
+              },
+              "outline_width": {"type": "integer", "minimum": 0}
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rgba": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 255
+      }
+    }
+  },
+  "additionalProperties": false
+}
