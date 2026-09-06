@@ -111,7 +111,7 @@ A child-specific guard may be stricter, but must not weaken MUST_SUPPLY_MEDIA.
 
 Canonical transition:
 
-`READY_FOR_CHATGPT → AUTHORIZE_ASSET_DISPATCH → DISPATCH_AUTHORIZED → AWAITING_RESULT_IMPORT`
+`READY_FOR_CHATGPT → AUTHORIZE_ASSET_DISPATCH → DISPATCH_AUTHORIZED → RENDERER_CALL + DISPATCH_RECEIPT → AWAITING_RESULT_IMPORT`
 
 Authorization binds, in one immutable job contract:
 - the exact work packet/project/episode/stage;
@@ -123,5 +123,8 @@ Authorization binds, in one immutable job contract:
 
 The runtime must not call an image/audio/video renderer before this authorization exists.
 A Markdown rule, a prompt description, an operator memory, or a repository path alone cannot substitute for bound media evidence.
+
+A renderer call is not considered media-conditioned merely because a pre-dispatch job said the reference would be used.
+Before result import, a post-dispatch receipt must prove that each required registered asset was actually passed through an explicit media-input binding with matching hash and a concrete input handle.
 
 For screen-bearing props, the contract must resolve subject/display/camera visibility before generation. Contradictory geometry is a dispatch failure, not a QC retry.
