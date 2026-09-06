@@ -21,6 +21,20 @@ The parent exists to pin an exact compatible combination of child commits and la
 The parent now also owns executable cross-project system policy and validation.
 It still does not own child creative voice, style, source policy, or episode facts.
 
+## Meaning of “갱신”
+
+When the user says “갱신”:
+1. fetch current child/parent authority;
+2. reconcile contradictions and duplicated rules;
+3. merge still-valid knowledge into the narrowest canonical owner;
+4. delete fully superseded working-tree documents/code/assets instead of keeping local archives;
+5. rely on Git history for historical recovery;
+6. verify child HEADs first;
+7. advance AutoPipeline submodule pointers;
+8. refetch and verify the final compatible combination.
+
+Do not create session handoff files when CURRENT_STATE or an existing authority can carry the information.
+
 ## Three-level production authority
 
 1. System level: `SYSTEM_ARCHITECTURE.md` and `config/system_policy.json`.
@@ -40,7 +54,7 @@ For toon projects opted into `ASSET_COMPOSITION_CONTRACT.md`:
 - child-specific generative QC still applies when creating a new asset;
 - a full-frame stochastic result requires an explicit child-declared exception.
 
-Do not route the system back to per-frame generation merely because old child prompts/render adapters still exist for compatibility.
+Do not route the system back to per-frame generation from stale chat memory or Git history. Retired child render adapters are removed from current working trees.
 
 ## Context contamination
 
@@ -75,7 +89,7 @@ This is a cross-project execution invariant. Project-specific creative content r
 
 ## Shared sequential-asset QC
 
-Before a complete raster-set user gate, every child using sequential generated assets must apply the common quality envelope from system policy:
+Before the final composed-art review/export gate, every child using sequential visual assets must apply the common quality envelope from system policy:
 - contract/identity/geometry checks before taste review;
 - viewer-perceived sequence redundancy review without direction quotas;
 - declared semantic-intent fidelity;
