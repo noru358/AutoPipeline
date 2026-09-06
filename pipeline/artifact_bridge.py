@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 STATUSES = {
     "READY_FOR_CHATGPT",
     "AWAITING_RESULT_IMPORT",
@@ -92,7 +92,7 @@ def _validate_packet_shape(packet: dict[str, Any]) -> None:
         "schema_version",
         "packet_id",
         "project_id",
-        "episode_id",
+        "work_scope",
         "stage_id",
         "status",
         "state_revision",
@@ -107,6 +107,11 @@ def _validate_packet_shape(packet: dict[str, Any]) -> None:
     }
     _require(required <= packet.keys(), f"work packet missing: {sorted(required - packet.keys())}")
     _require(packet["schema_version"] == SCHEMA_VERSION, "unsupported work packet schema version")
+    _require(packet["work_scope"] in {"PROJECT", "EPISODE"}, f"invalid work_scope: {packet['work_scope']}")
+    if packet["work_scope"] == "EPISODE":
+        _require(isinstance(packet.get("episode_id"), str) and packet["episode_id"], "episode scope requires episode_id")
+    else:
+        _require("episode_id" not in packet, "project scope must not carry episode_id")
     _require(packet["status"] in STATUSES, f"invalid work packet status: {packet['status']}")
     _require(isinstance(packet["state_revision"], int) and packet["state_revision"] >= 1, "invalid state_revision")
     _require(isinstance(packet["authority_snapshot"], list), "authority_snapshot must be a list")
@@ -194,7 +199,8 @@ def create_packet(
     repo_root: Path | str,
     policy_path: Path | str,
     profile_path: Path | str,
-    episode_id: str,
+    work_scope: str,
+    episode_id: str | None,
     stage_id: str,
     packet_path: Path | str,
     packet_id: str | None = None,
@@ -219,11 +225,20 @@ def create_packet(
 
     project_id = profile.get("project_id")
     _require(isinstance(project_id, str) and project_id, "profile project_id is required")
-    try:
-        episode_pattern = re.compile(profile["episode_id_pattern"])
-    except (KeyError, TypeError, re.error) as exc:
-        raise BridgeError("profile has invalid episode_id_pattern") from exc
-    _require(episode_pattern.fullmatch(episode_id) is not None, f"invalid episode_id for {project_id}: {episode_id}")
+    work_scope = work_scope.upper()
+    _require(work_scope in {"PROJECT", "EPISODE"}, f"invalid work_scope: {work_scope}")
+    if work_scope == "EPISODE":
+        _require(isinstance(episode_id, str) and episode_id, "episode scope requires episode_id")
+        try:
+            episode_pattern = re.compile(profile["episode_id_pattern"])
+        except (KeyError, TypeError, re.error) as exc:
+            raise BridgeError("profile has invalid episode_id_pattern") from exc
+        _require(
+            episode_pattern.fullmatch(episode_id) is not None,
+            f"invalid episode_id for {project_id}: {episode_id}",
+        )
+    else:
+        _require(episode_id is None, "project scope must not carry episode_id")
 
     overrides = profile.get("stage_overrides", {})
     override = overrides.get(stage_id, {})
@@ -244,11 +259,12 @@ def create_packet(
         )
 
     now = _utc_now()
+    scope_key = episode_id if work_scope == "EPISODE" else "PROJECT"
     packet = {
         "schema_version": SCHEMA_VERSION,
-        "packet_id": packet_id or f"{project_id}:{episode_id}:{stage_id}:{uuid.uuid4().hex[:12]}",
+        "packet_id": packet_id or f"{project_id}:{scope_key}:{stage_id}:{uuid.uuid4().hex[:12]}",
         "project_id": project_id,
-        "episode_id": episode_id,
+        "work_scope": work_scope,
         "stage_id": stage_id,
         "status": "READY_FOR_CHATGPT",
         "state_revision": 1,
@@ -268,6 +284,8 @@ def create_packet(
         "events": [],
         "next_action": {},
     }
+    if work_scope == "EPISODE":
+        packet["episode_id"] = episode_id
     _event(packet, "PACKET_CREATED", {"authority_count": len(snapshot)})
     packet["next_action"] = _compute_next_action(packet)
     _validate_packet_shape(packet)
@@ -550,7 +568,8 @@ def main() -> None:
     init.add_argument("--repo-root", default=".")
     init.add_argument("--policy", default="config/system_policy.json")
     init.add_argument("--profile", required=True)
-    init.add_argument("--episode", required=True)
+    init.add_argument("--scope", choices=["project", "episode"], default="episode")
+    init.add_argument("--episode")
     init.add_argument("--stage", required=True)
     init.add_argument("--packet", required=True)
 
@@ -592,6 +611,7 @@ def main() -> None:
                 repo_root=args.repo_root,
                 policy_path=args.policy,
                 profile_path=args.profile,
+                work_scope=args.scope.upper(),
                 episode_id=args.episode,
                 stage_id=args.stage,
                 packet_path=args.packet,
