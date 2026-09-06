@@ -10,11 +10,17 @@
     "continuity_policy",
     "canonical_stages",
     "program_responsibilities",
-    "chatgpt_responsibilities"
+    "chatgpt_responsibilities",
+    "quality_policy"
   ],
   "properties": {
-    "schema_version": {"const": "1.0"},
-    "system_id": {"type": "string", "minLength": 1},
+    "schema_version": {
+      "const": "1.0"
+    },
+    "system_id": {
+      "type": "string",
+      "minLength": 1
+    },
     "execution_policy": {
       "type": "object",
       "additionalProperties": false,
@@ -24,25 +30,79 @@
         "allow_paid_fallback",
         "on_subscription_limit",
         "user_trigger_required",
-        "unattended_subscription_invocation"
+        "unattended_subscription_invocation",
+        "asset_production_requires_authorized_packet",
+        "asset_production_requires_bound_media_evidence",
+        "asset_production_requires_visual_contract"
       ],
       "properties": {
-        "ai_mode": {"const": "CHATGPT_SUBSCRIPTION_FIRST"},
-        "additional_paid_ai_budget_krw": {"const": 0},
-        "allow_paid_fallback": {"const": false},
-        "on_subscription_limit": {"const": "SUSPEND_AND_RESUME"},
-        "user_trigger_required": {"const": true},
-        "unattended_subscription_invocation": {"const": false}
+        "ai_mode": {
+          "const": "CHATGPT_SUBSCRIPTION_FIRST"
+        },
+        "additional_paid_ai_budget_krw": {
+          "const": 0
+        },
+        "allow_paid_fallback": {
+          "const": false
+        },
+        "on_subscription_limit": {
+          "const": "SUSPEND_AND_RESUME"
+        },
+        "user_trigger_required": {
+          "const": true
+        },
+        "unattended_subscription_invocation": {
+          "const": false
+        },
+        "asset_production_requires_authorized_packet": {
+          "const": true
+        },
+        "asset_production_requires_bound_media_evidence": {
+          "const": true
+        },
+        "asset_production_requires_visual_contract": {
+          "const": true
+        }
       }
     },
     "continuity_policy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["context_contamination_action", "contamination_signals", "handoff_required_fields"],
+      "required": [
+        "context_contamination_action",
+        "contamination_signals",
+        "handoff_required_fields",
+        "unsafe_context_is_sticky",
+        "post_threshold_outputs_quarantined"
+      ],
       "properties": {
-        "context_contamination_action": {"const": "HANDOFF_TO_NEW_SESSION"},
-        "contamination_signals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
-        "handoff_required_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true}
+        "context_contamination_action": {
+          "const": "HANDOFF_TO_NEW_SESSION"
+        },
+        "contamination_signals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "handoff_required_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "unsafe_context_is_sticky": {
+          "const": true
+        },
+        "post_threshold_outputs_quarantined": {
+          "const": true
+        }
       }
     },
     "canonical_stages": {
@@ -51,15 +111,87 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "order", "owner"],
+        "required": [
+          "id",
+          "order",
+          "owner"
+        ],
         "properties": {
-          "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]+$"},
-          "order": {"type": "integer", "minimum": 1},
-          "owner": {"enum": ["CHATGPT_ASSISTED", "PROGRAM", "HYBRID"]}
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]+$"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "owner": {
+            "enum": [
+              "CHATGPT_ASSISTED",
+              "PROGRAM",
+              "HYBRID"
+            ]
+          }
         }
       }
     },
-    "program_responsibilities": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
-    "chatgpt_responsibilities": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true}
+    "program_responsibilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "chatgpt_responsibilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "quality_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hard_contract_qc_precedes_subjective_qc",
+        "sequence_qc_before_raster_user_gate",
+        "fixed_direction_quotas_forbidden",
+        "viewer_perceived_redundancy_review",
+        "declared_semantic_intent_qc",
+        "high_risk_interaction_geometry_qc",
+        "rejected_output_quarantine",
+        "minimal_repair_scope"
+      ],
+      "properties": {
+        "hard_contract_qc_precedes_subjective_qc": {
+          "const": true
+        },
+        "sequence_qc_before_raster_user_gate": {
+          "const": true
+        },
+        "fixed_direction_quotas_forbidden": {
+          "const": true
+        },
+        "viewer_perceived_redundancy_review": {
+          "const": true
+        },
+        "declared_semantic_intent_qc": {
+          "const": true
+        },
+        "high_risk_interaction_geometry_qc": {
+          "const": true
+        },
+        "rejected_output_quarantine": {
+          "const": true
+        },
+        "minimal_repair_scope": {
+          "const": true
+        }
+      }
+    }
   }
 }
