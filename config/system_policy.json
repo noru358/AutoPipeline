@@ -7,7 +7,10 @@
     "allow_paid_fallback": false,
     "on_subscription_limit": "SUSPEND_AND_RESUME",
     "user_trigger_required": true,
-    "unattended_subscription_invocation": false
+    "unattended_subscription_invocation": false,
+    "asset_production_requires_authorized_packet": true,
+    "asset_production_requires_bound_media_evidence": true,
+    "asset_production_requires_visual_contract": true
   },
   "continuity_policy": {
     "context_contamination_action": "HANDOFF_TO_NEW_SESSION",
@@ -29,15 +32,51 @@
     ]
   },
   "canonical_stages": [
-    {"id": "WORK_RESEARCH", "order": 1, "owner": "CHATGPT_ASSISTED"},
-    {"id": "RADAR", "order": 2, "owner": "CHATGPT_ASSISTED"},
-    {"id": "EDITORIAL", "order": 3, "owner": "CHATGPT_ASSISTED"},
-    {"id": "STORYBOARD", "order": 4, "owner": "CHATGPT_ASSISTED"},
-    {"id": "ASSET_PRODUCTION", "order": 5, "owner": "HYBRID"},
-    {"id": "COMPOSITION", "order": 6, "owner": "PROGRAM"},
-    {"id": "QC", "order": 7, "owner": "HYBRID"},
-    {"id": "EXPORT", "order": 8, "owner": "PROGRAM"},
-    {"id": "RETROSPECTIVE", "order": 9, "owner": "HYBRID"}
+    {
+      "id": "WORK_RESEARCH",
+      "order": 1,
+      "owner": "CHATGPT_ASSISTED"
+    },
+    {
+      "id": "RADAR",
+      "order": 2,
+      "owner": "CHATGPT_ASSISTED"
+    },
+    {
+      "id": "EDITORIAL",
+      "order": 3,
+      "owner": "CHATGPT_ASSISTED"
+    },
+    {
+      "id": "STORYBOARD",
+      "order": 4,
+      "owner": "CHATGPT_ASSISTED"
+    },
+    {
+      "id": "ASSET_PRODUCTION",
+      "order": 5,
+      "owner": "HYBRID"
+    },
+    {
+      "id": "COMPOSITION",
+      "order": 6,
+      "owner": "PROGRAM"
+    },
+    {
+      "id": "QC",
+      "order": 7,
+      "owner": "HYBRID"
+    },
+    {
+      "id": "EXPORT",
+      "order": 8,
+      "owner": "PROGRAM"
+    },
+    {
+      "id": "RETROSPECTIVE",
+      "order": 9,
+      "owner": "HYBRID"
+    }
   ],
   "program_responsibilities": [
     "persistent_project_state",
