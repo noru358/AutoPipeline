@@ -43,10 +43,12 @@ def approved_assets(project_root: Path, registry_path: Path) -> dict[str, dict]:
     if registry.get("schema_version") != "1.0":
         raise CompositionError("unsupported registry schema_version")
     result: dict[str, dict] = {}
+    seen: set[str] = set()
     for item in registry.get("assets", []):
         asset_id = item.get("asset_id")
-        if not asset_id or asset_id in result:
+        if not asset_id or asset_id in seen:
             raise CompositionError(f"missing or duplicate asset_id: {asset_id!r}")
+        seen.add(asset_id)
         if item.get("status") != "APPROVED":
             continue
         path = (project_root / item["path"]).resolve()
