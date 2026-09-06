@@ -49,6 +49,13 @@ class MediaGateTests(unittest.TestCase):
     def test_authorizes_generic_media_job(self):
         self.assertEqual(authorize(base_job()), "AUTHORIZED")
 
+    def test_coverage_scope_and_influence_are_separate_namespaces(self):
+        job = base_job()
+        job["requirements"][0]["coverage_scope"] = ["person_style"]
+        job["requirements"][0]["allowed_influence"] = ["face", "eyes", "linework"]
+        job["requirements"][0]["requested_influence"] = ["face", "eyes"]
+        self.assertEqual(authorize(job), "AUTHORIZED")
+
     def test_blocks_renderer_without_media_support(self):
         job=base_job()
         job["renderer"]["supports_explicit_media_inputs"]=False
