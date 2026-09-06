@@ -57,7 +57,7 @@
       ]
     },
     "STORYBOARD": {
-      "intent": "Design the PROXY_EATER appetite arc, resolve BODY_S01 vs non-public A00 visual-anchor route, then define sensory/observable cues, food-state transitions, entity visibility allowlists, background scope, visual delta rhythm and high-risk interaction geometry.",
+      "intent": "Design the PROXY_EATER appetite arc, food-state transitions, entity visibility, background scope, visual delta rhythm, required PERSON/FOOD/contact assets and high-risk interaction geometry.",
       "authority_refs": [
         "CONTENT_SYSTEM.md",
         "FOOD_STATE_SYSTEM.md",
@@ -82,7 +82,7 @@
       ]
     },
     "QC": {
-      "intent": "Run hard reference-domain, person-style, entity-allowlist, identity, anatomy/contact and food-state checks first, then appetite/proxy-eater and viewer-perceived sequence QC; require locked composition templates before completion.",
+      "intent": "Validate approved asset domains, PERSON identity, anatomy/contact, food state and meal-context first, then appetite/proxy-eater and viewer-perceived sequence QC; composition templates must be locked before production completion.",
       "authority_refs": [
         "PRODUCTION_PROTOCOL.md",
         "VISUAL_SYSTEM.md"
