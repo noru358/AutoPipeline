@@ -32,9 +32,17 @@ the narrowest scope that explains the repeat pattern.
 
 ## Context contamination
 
-If confirmed rules are repeatedly missed, retired decisions reappear, repository authority conflicts with conversation claims, artifact/approval identity is uncertain, or the same hard render contract fails twice in one conversational render context, stop. Save the mandatory handoff fields declared in system policy and continue in a new session.
+The existence of full storyboards, future-shot plans, or prior work somewhere in the operator/chat conversation is **not by itself a contamination signal**.
 
-The unsafe-context decision is sticky: a later superficially acceptable output in the same contaminated context does not clear the blocker. Quarantine all post-threshold outputs from anchor/repair/continuity use until the target is reproduced or explicitly revalidated in a clean context. The new session must re-read repository authority instead of relying on conversational recall.
+For sequential generation, the operative isolation boundary is the actual renderer dispatch capsule:
+- compile only the current target contract plus minimum continuity/media bindings;
+- do not intentionally put future-shot instructions, future state, voice copy, rejected outputs, or unrelated episode material into the dispatch payload;
+- inspect the result for future-shot semantic leakage, multi-shot leakage, stale-anchor reuse, or current-state contradiction;
+- same-session continuation is allowed when the target-only dispatch and hard output QC pass.
+
+Stop and hand off to a new session only when a configured contamination signal is actually observed: confirmed rules are repeatedly missed, retired decisions reappear, repository authority conflicts with conversation claims, artifact/approval identity is uncertain, future-shot/multi-shot leakage is observed in dispatch or output, or the same hard render contract fails twice after capsule recompilation.
+
+The unsafe-context decision is sticky once that evidence threshold is crossed: a later superficially acceptable output in the same contaminated context does not clear the blocker. Quarantine all post-threshold outputs from anchor/repair/continuity use until the target is reproduced or explicitly revalidated in a clean context. The new session must re-read repository authority instead of relying on conversational recall.
 
 ## Shared sequential-asset QC
 
