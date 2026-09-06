@@ -130,6 +130,14 @@ Context continuity is a top-level operating constraint. Stop the active creative
 or implementation task when any configured contamination signal is observed.
 Do not reconstruct certainty from conversation alone.
 
+For sequential renderer work, **ambient conversation breadth is not itself contamination**.
+A session may contain the complete storyboard while each renderer call receives a freshly compiled
+target-only dispatch capsule. The hard boundary is what is intentionally bound at dispatch plus what
+the output demonstrably leaks, not whether future beats exist elsewhere in the chat. Same-session
+continuation is therefore valid while dispatch isolation and output QC pass. A clean-session handoff
+is required only after actual contamination evidence, repeated hard leakage failure, or artifact/
+approval identity uncertainty.
+
 Before recommending a new session:
 
 1. verify the current repository heads and dirty state;
