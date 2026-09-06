@@ -37,6 +37,22 @@ TTS, generative video, publishing or full animation.
 Shared code must not force story reversal, recurring cast, community voice or
 recipe exposition across projects. Those choices belong to child authority.
 
+### Product packaging and sequence-state ownership
+
+The shared system owns durable asset identity, stage order, approval binding and export mechanics.
+It does **not** force one carousel cover semantics across content families.
+
+A child project may:
+- use its first body frame as the public hook/cover; or
+- assemble a separate product cover outside the body-state sequence.
+
+That decision and its visual grammar belong to the child method authority/profile.
+The shared runtime must preserve the declared product order without silently treating a separate cover as body frame 1.
+
+Likewise, persistent sequence state is a shared execution concept but its entities are child-owned.
+A story project may persist cast/prop/UI/location facts; an observation-sensory project may persist meal/food/table facts.
+The parent may transport state references and deltas, but it must not hard-code child entity names or domain-specific topology rules.
+
 ## 3. Canonical workflow
 
 The common stage IDs are stable routing names, not a demand for one AI agent or
