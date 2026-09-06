@@ -56,14 +56,25 @@ creative authority used by that stage, copies actual input/result bytes into the
 packet package, records SHA-256 identity, binds explicit user approval to one
 result hash, and verifies all of it again before resume.
 
-The runtime packet format is `schemas/work_packet.schema.json`. Generated
-workspaces are local runtime data and are ignored by Git.
+The runtime packet format is `schemas/work_packet.schema.json` (v1.1). A packet
+is explicitly `PROJECT`-scoped or `EPISODE`-scoped, so research and channel
+design are not forced into a fake episode. Generated workspaces are local runtime
+data and are ignored by Git.
 
 Example:
 
 ```bash
+# Project-level work such as channel/work research does not need a fake episode ID.
 python -m pipeline.artifact_bridge init \
   --profile profiles/instatoon.json \
+  --scope project \
+  --stage WORK_RESEARCH \
+  --packet workspaces/instatoon/PROJECT/WORK_RESEARCH/packet.json
+
+# Episode-level production binds the packet to a real episode.
+python -m pipeline.artifact_bridge init \
+  --profile profiles/instatoon.json \
+  --scope episode \
   --episode E001 \
   --stage ASSET_PRODUCTION \
   --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json
