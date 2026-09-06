@@ -74,6 +74,21 @@ A runtime may combine adjacent ChatGPT-assisted stages in one user-triggered
 session. It must still save the result needed to resume without relying on chat
 memory.
 
+## 3.5 Asset-authoring / final-render boundary
+
+The shared rendering boundary is defined by `ASSET_COMPOSITION_CONTRACT.md`.
+
+For opted-in toon children, `ASSET_PRODUCTION` no longer means “generate each complete final frame.”
+It means resolve approved assets and author/QC/register only missing assets.
+`COMPOSITION` owns the default final frame: deterministic asset selection, transforms, layer order,
+editable text/UI and exportable scene source.
+
+A stochastic full-frame renderer is an explicit child-declared exception lane. It must not silently
+become the default because the asset library has a gap.
+
+This preserves generated-image capability without forcing accepted identity/style/geometry to be
+re-sampled on every frame.
+
 ## 4. Tool ownership
 
 ChatGPT is preferred for research, editorial reasoning, drafts, image work when
