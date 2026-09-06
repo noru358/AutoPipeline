@@ -6,6 +6,7 @@ from pathlib import Path
 from pipeline.artifact_bridge import (
     BridgeError,
     approve_result,
+    authorize_asset_dispatch,
     create_packet,
     load_packet,
     mark_awaiting_result_import,
@@ -86,10 +87,66 @@ class ArtifactBridgeTests(unittest.TestCase):
             packet_id="packet-test",
         )
 
+
+    def _authorize(self, input_asset=None, visual_contract=None):
+        if input_asset is None:
+            source = self.root / "style.png"
+            source.write_bytes(b"actual-style-bytes")
+            input_asset = register_input_asset(
+                packet_path=self.packet,
+                source_path=source,
+                role="style_reference",
+                media_type="image",
+            )
+        job = {
+            "job_id": "render-job-test",
+            "packet_id": "packet-test",
+            "project_id": "instatoon",
+            "episode_id": "E001",
+            "stage_id": "ASSET_PRODUCTION",
+            "requirements": [
+                {
+                    "requirement_id": "visual_anchor",
+                    "role": "style",
+                    "media_type": "image",
+                    "source_id": input_asset["asset_id"],
+                    "conditioning": "MUST_SUPPLY_MEDIA",
+                    "required": True,
+                    "expected_hash": input_asset["sha256"],
+                }
+            ],
+            "renderer": {
+                "renderer_id": "renderer-x",
+                "supports_explicit_media_inputs": True,
+                "supported_media_types": ["image"],
+                "max_media_inputs": 4,
+                "supported_prompt_bindings": ["EXPLICIT"],
+            },
+            "supplied": [
+                {
+                    "requirement_id": "visual_anchor",
+                    "asset_id": input_asset["asset_id"],
+                    "source_id": input_asset["asset_id"],
+                    "media_type": "image",
+                    "input_handle": "provider-input-1",
+                    "actual_hash": input_asset["sha256"],
+                }
+            ],
+            "prompt_binding": "EXPLICIT",
+            "visual_contract": visual_contract or {
+                "visual_information_owner": "PHYSICAL_ACTION",
+                "screen_bearing_prop": False,
+                "screen_contract": None,
+            },
+        }
+        job_path = self.root / "dispatch-job.json"
+        job_path.write_text(json.dumps(job), encoding="utf-8")
+        return authorize_asset_dispatch(packet_path=self.packet, job_path=job_path)
+
     def test_create_packet_snapshots_only_stage_authority(self):
         packet = self._create()
         self.assertEqual(packet["status"], "READY_FOR_CHATGPT")
-        self.assertEqual(packet["next_action"]["type"], "RUN_CHATGPT_ASSISTED_STAGE")
+        self.assertEqual(packet["next_action"]["type"], "AUTHORIZE_ASSET_DISPATCH")
         self.assertEqual(
             [item["path"] for item in packet["authority_snapshot"]],
             ["instatoon/STYLE_LOCK.md"],
@@ -113,6 +170,7 @@ class ArtifactBridgeTests(unittest.TestCase):
         self.assertTrue(stored_input.is_file())
         self.assertEqual(stored_input.read_bytes(), b"actual-style-bytes")
 
+        self._authorize(input_asset)
         mark_awaiting_result_import(self.packet)
         result_file = self.root / "result.png"
         result_file.write_bytes(b"chatgpt-result")
@@ -132,6 +190,7 @@ class ArtifactBridgeTests(unittest.TestCase):
 
     def test_explicit_user_approval_locks_hash_and_blocks_replacement(self):
         self._create()
+        self._authorize()
         mark_awaiting_result_import(self.packet)
         result_file = self.root / "result.png"
         result_file.write_bytes(b"approved-result")
@@ -178,6 +237,7 @@ class ArtifactBridgeTests(unittest.TestCase):
 
     def test_resume_fails_closed_if_registered_asset_bytes_change(self):
         self._create()
+        self._authorize()
         mark_awaiting_result_import(self.packet)
         result_file = self.root / "result.png"
         result_file.write_bytes(b"result-v1")
@@ -202,12 +262,53 @@ class ArtifactBridgeTests(unittest.TestCase):
 
     def test_suspend_resume_restores_exact_prior_status_after_verification(self):
         self._create()
+        self._authorize()
         mark_awaiting_result_import(self.packet)
         suspended = suspend_packet(self.packet, "subscription limit")
         self.assertEqual(suspended["status"], "SUSPENDED")
         resumed = resume_suspended_packet(self.packet, repo_root=self.root)
         self.assertEqual(resumed["status"], "AWAITING_RESULT_IMPORT")
         self.assertEqual(resumed["next_action"]["type"], "IMPORT_CHATGPT_RESULT")
+
+
+    def test_asset_production_cannot_dispatch_before_authorization(self):
+        self._create()
+        with self.assertRaisesRegex(BridgeError, "requires DISPATCH_AUTHORIZED"):
+            mark_awaiting_result_import(self.packet)
+
+    def test_authorization_binds_registered_input_hash(self):
+        self._create()
+        source = self.root / "style.png"
+        source.write_bytes(b"actual-style-bytes")
+        input_asset = register_input_asset(
+            packet_path=self.packet,
+            source_path=source,
+            role="style_reference",
+            media_type="image",
+        )
+        authorization = self._authorize(input_asset)
+        self.assertEqual(authorization["status"], "AUTHORIZED")
+        packet = load_packet(self.packet)
+        self.assertEqual(packet["status"], "DISPATCH_AUTHORIZED")
+        self.assertEqual(packet["next_action"]["type"], "RUN_CHATGPT_ASSISTED_STAGE")
+
+    def test_authorization_blocks_impossible_screen_geometry(self):
+        self._create()
+        contract = {
+            "visual_information_owner": "PHYSICAL_ACTION",
+            "screen_bearing_prop": True,
+            "screen_contract": {
+                "prop_id": "phone",
+                "display_surface": "FRONT",
+                "subject_screen_relation": "LOOKING_AT_SCREEN",
+                "camera_screen_relation": "FRONT_OF_SUBJECT",
+                "viewer_screen_visibility": "REQUIRED",
+                "ui_delivery_mode": "RASTER_SHELL_ONLY",
+                "geometry_rule": "subject and front camera both require private display visibility",
+            },
+        }
+        with self.assertRaisesRegex(BridgeError, "impossible shared visibility"):
+            self._authorize(visual_contract=contract)
 
     def test_project_scoped_packet_does_not_require_fake_episode(self):
         packet_path = self.root / "workspaces" / "instatoon" / "PROJECT" / "EDITORIAL" / "packet.json"
