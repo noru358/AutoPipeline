@@ -36,6 +36,9 @@ class ArtifactBridgeTests(unittest.TestCase):
                 "on_subscription_limit": "SUSPEND_AND_RESUME",
                 "user_trigger_required": True,
                 "unattended_subscription_invocation": False,
+                "asset_production_requires_authorized_packet": True,
+                "asset_production_requires_bound_media_evidence": True,
+                "asset_production_requires_visual_contract": True,
             },
             "canonical_stages": [
                 {"id": "EDITORIAL", "order": 1, "owner": "CHATGPT_ASSISTED"},
