@@ -108,13 +108,13 @@ python -m pipeline.artifact_bridge dispatched \
 
 python -m pipeline.artifact_bridge add-result \
   --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json \
-  --file /path/to/chatgpt-result.png \
-  --role representative_frame \
+  --file /path/to/approved-character-pose.png \
+  --role character_pose \
   --media-type image
 
 python -m pipeline.artifact_bridge approve \
   --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json \
-  --asset-id result:representative_frame:<hash-prefix>
+  --asset-id result:character_pose:<hash-prefix>
 
 python -m pipeline.artifact_bridge verify \
   --packet workspaces/instatoon/E001/ASSET_PRODUCTION/packet.json
