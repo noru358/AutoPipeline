@@ -6,17 +6,18 @@ Provide one project-agnostic fail-closed contract for any generation stage that 
 The generic engine must not know project asset names such as REF_V2_D, CHAR_06, opening still, or voice pack.
 Child projects declare requirements; renderer adapters declare capabilities; runtime evidence proves what was actually supplied.
 
-## 1. Three separate facts
+## 1. Four separate facts
 
 Never collapse these:
 
 1. DECLARED — the child project says an input is required.
 2. AVAILABLE — the source asset exists and is readable.
-3. SUPPLIED — the renderer call actually received that asset as media input.
+3. BOUND — pre-dispatch authorization points to the exact registered bytes/hash that the call must use.
+4. SUPPLIED — after the renderer call, a dispatch receipt confirms that those exact bytes were passed through an explicit media-input binding.
 
-Only SUPPLIED satisfies a MUST_SUPPLY_MEDIA requirement.
+Only SUPPLIED satisfies a completed MUST_SUPPLY_MEDIA dispatch.
 
-Reading a file, summarizing it, hashing it, or mentioning its path in a prompt is not renderer conditioning.
+A Git path, Markdown mention, hash, local read, prompt description, or pre-dispatch plan is not proof that the renderer actually received the media.
 
 ## 2. Generic requirement model
 
@@ -30,9 +31,12 @@ Each generation job materializes media requirements with:
 - required: boolean;
 - expected_hash: optional integrity hash;
 - coverage_scope: optional list of visual/information domains that the source actually depicts or is authorized to control (for example person_style, food_style, background_style, character_identity, layout);
-- allowed_influence: optional narrower list of attributes the child permits this reference to control.
+- allowed_influence: optional narrower list of attributes the child permits this reference to control;
+- requested_influence: optional list of attributes this exact generation job asks the reference to control.
 
 A reference must not be treated as authority for domains it does not cover. A person-only style sheet cannot silently become food, background, camera, or composition authority merely because it is the only supplied image.
+
+When requested_influence is present, it must be a subset of coverage_scope and allowed_influence.
 
 The engine treats role as opaque metadata. It must not encode child-specific filenames.
 
@@ -61,6 +65,24 @@ For each actual render call, record supplied media evidence:
 
 A requirement is satisfied only when declaration, capability, and supplied evidence all agree.
 
+## 4.5 Post-dispatch receipt
+
+Pre-dispatch authorization proves readiness, not provider receipt.
+
+After the renderer call and before result import, the runtime/adapter must record a receipt with:
+- job_id
+- renderer_id
+- explicit_media_binding_confirmed=true when MUST_SUPPLY_MEDIA exists
+- one binding per required media requirement
+- source_id / asset_id
+- media_type
+- actual_hash
+- binding_method=EXPLICIT_MEDIA_INPUT
+- non-empty input_handle representing the actual renderer-call binding
+
+The receipt is hash-locked into the work packet.
+If the receipt is absent or does not match the authorized job, result import is blocked.
+
 ## 5. Fail-closed authorization
 
 Block the generation call when any required item fails one of these:
@@ -73,7 +95,8 @@ Block the generation call when any required item fails one of these:
 - expected hash mismatches;
 - provider media-count limit would be exceeded;
 - prompt-binding mode is not allowed by the child job contract;
-- the job asks a supplied reference to control a domain outside its declared coverage_scope / allowed_influence.
+- the job asks a supplied reference to control a domain outside its declared coverage_scope / allowed_influence;
+- post-dispatch receipt is missing, metadata-only, hash-mismatched, or lacks an explicit renderer input handle.
 
 Do not downgrade MUST_SUPPLY_MEDIA to authority-only because of convenience, tool habit, credits, or connector limitations.
 
