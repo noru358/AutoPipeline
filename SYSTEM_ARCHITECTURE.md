@@ -48,7 +48,7 @@ one user approval per stage.
 | 2 | `RADAR` | Candidate material, provenance and selection evidence |
 | 3 | `EDITORIAL` | Intended audience experience and content structure |
 | 4 | `STORYBOARD` | Frame roles, visual change and text/image layout plan |
-| 5 | `ASSET_PRODUCTION` | Bound references and versioned generated/reused assets |
+| 5 | `ASSET_PRODUCTION` | Authorized dispatch contract + bound references + versioned generated/reused assets |
 | 6 | `COMPOSITION` | Editable scene source and deterministic preview |
 | 7 | `QC` | Defect location, owner, repair scope and version-bound result |
 | 8 | `EXPORT` | Target-specific deliverables derived from the editable source |
@@ -132,16 +132,18 @@ Change order:
 
 ## 8. Implementation milestones
 
-The subscription-first artifact bridge now has an executable baseline:
+The subscription-first artifact bridge now has an executable fail-closed dispatch baseline:
 
 1. a stage work packet snapshots the exact child authority used for that stage;
 2. actual input and ChatGPT-produced result bytes are copied into the packet package and SHA-256 identified;
 3. explicit user approval is bound to one immutable result hash;
 4. reopening verifies authority and asset bytes before returning a safe next action;
 5. approved packets reject replacement result registration;
-6. manual import remains explicit until direct ChatGPT-to-runtime transfer is verified.
+6. manual import remains explicit until direct ChatGPT-to-runtime transfer is verified;
+7. `ASSET_PRODUCTION` cannot dispatch directly from READY state: actual registered media, renderer capability and a visual geometry contract must first produce `DISPATCH_AUTHORIZED`;
+8. screen-bearing visual contracts reject structurally contradictory visibility requirements before a renderer is called.
 
-This baseline proves storage, identity, approval locking and resume semantics. It
+This baseline proves storage, identity, approval locking, dispatch authorization and resume semantics. It
 does not yet prove the account-specific direct artifact handoff path.
 
 The next implementation milestone is the first editor slice: editable

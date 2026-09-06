@@ -20,10 +20,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from pipeline.media_gate import GateError as MediaGateError, authorize as authorize_media
 
-SCHEMA_VERSION = "1.1"
+
+SCHEMA_VERSION = "1.2"
 STATUSES = {
     "READY_FOR_CHATGPT",
+    "DISPATCH_AUTHORIZED",
     "AWAITING_RESULT_IMPORT",
     "RESULT_REGISTERED",
     "USER_APPROVED",
@@ -52,6 +55,11 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _sha256_json(value: Any) -> str:
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -167,9 +175,19 @@ def _advance_revision(packet: dict[str, Any]) -> None:
 def _compute_next_action(packet: dict[str, Any]) -> dict[str, str]:
     status = packet["status"]
     if status == "READY_FOR_CHATGPT":
+        if packet.get("stage_id") == "ASSET_PRODUCTION":
+            return {
+                "type": "AUTHORIZE_ASSET_DISPATCH",
+                "instruction": "Bind actual input assets, renderer capability and visual geometry before any raster generation.",
+            }
         return {
             "type": "RUN_CHATGPT_ASSISTED_STAGE",
             "instruction": "Use the saved authority and registered inputs in a user-triggered ChatGPT session.",
+        }
+    if status == "DISPATCH_AUTHORIZED":
+        return {
+            "type": "RUN_CHATGPT_ASSISTED_STAGE",
+            "instruction": "The asset-production dispatch is authorized; use exactly the bound media and visual contract.",
         }
     if status == "AWAITING_RESULT_IMPORT":
         return {
@@ -219,6 +237,9 @@ def create_packet(
     _require(execution.get("allow_paid_fallback") is False, "paid fallback must be disabled")
     _require(execution.get("user_trigger_required") is True, "user trigger must be required")
     _require(execution.get("unattended_subscription_invocation") is False, "unattended subscription use is forbidden")
+    _require(execution.get("asset_production_requires_authorized_packet") is True, "asset production authorization policy must be enabled")
+    _require(execution.get("asset_production_requires_bound_media_evidence") is True, "bound media evidence policy must be enabled")
+    _require(execution.get("asset_production_requires_visual_contract") is True, "visual contract policy must be enabled")
 
     stage_ids = [stage.get("id") for stage in policy.get("canonical_stages", [])]
     _require(stage_id in stage_ids, f"unknown canonical stage: {stage_id}")
@@ -408,11 +429,87 @@ def register_result_asset(
     )
 
 
+
+def _verify_dispatch_job_against_packet(packet: dict[str, Any], job: dict[str, Any]) -> None:
+    _require(job.get("packet_id") == packet["packet_id"], "dispatch job packet_id mismatch")
+    _require(job.get("project_id") == packet["project_id"], "dispatch job project_id mismatch")
+    _require(job.get("stage_id") == packet["stage_id"], "dispatch job stage_id mismatch")
+    if packet["work_scope"] == "EPISODE":
+        _require(job.get("episode_id") == packet["episode_id"], "dispatch job episode_id mismatch")
+
+    input_assets = {
+        asset["asset_id"]: asset
+        for asset in packet["assets"]
+        if asset.get("kind") == "input"
+    }
+    supplied = job.get("supplied", [])
+    _require(isinstance(supplied, list), "dispatch job supplied must be a list")
+    seen_asset_ids: set[str] = set()
+    for evidence in supplied:
+        asset_id = evidence.get("asset_id")
+        _require(isinstance(asset_id, str) and asset_id, "dispatch evidence asset_id is required")
+        _require(asset_id not in seen_asset_ids, f"duplicate dispatch asset_id: {asset_id}")
+        seen_asset_ids.add(asset_id)
+        asset = input_assets.get(asset_id)
+        _require(asset is not None, f"dispatch evidence is not a registered input asset: {asset_id}")
+        _require(evidence.get("source_id") == asset_id, f"{asset_id}: source_id must equal registered asset_id")
+        _require(evidence.get("media_type") == asset["media_type"], f"{asset_id}: media_type mismatch")
+        _require(evidence.get("actual_hash") == asset["sha256"], f"{asset_id}: actual_hash mismatch")
+
+    try:
+        authorize_media(job)
+    except MediaGateError as exc:
+        raise BridgeError(f"asset dispatch rejected: {exc}") from exc
+
+
+def authorize_asset_dispatch(
+    *,
+    packet_path: Path | str,
+    job_path: Path | str,
+) -> dict[str, Any]:
+    packet_file = Path(packet_path).resolve()
+    packet = load_packet(packet_file)
+    revision = packet["state_revision"]
+    _require(packet["stage_id"] == "ASSET_PRODUCTION", "dispatch authorization is only for ASSET_PRODUCTION")
+    _require(packet["status"] == "READY_FOR_CHATGPT", f"cannot authorize dispatch from status {packet['status']}")
+
+    job = _load_json(Path(job_path).resolve())
+    _verify_dispatch_job_against_packet(packet, job)
+
+    authorization = {
+        "status": "AUTHORIZED",
+        "job_sha256": _sha256_json(job),
+        "job": job,
+        "authorized_at_utc": _utc_now(),
+    }
+    packet["dispatch_authorization"] = authorization
+    packet["status"] = "DISPATCH_AUTHORIZED"
+    _event(
+        packet,
+        "ASSET_DISPATCH_AUTHORIZED",
+        {"job_id": job.get("job_id"), "job_sha256": authorization["job_sha256"]},
+    )
+    _advance_revision(packet)
+    packet["next_action"] = _compute_next_action(packet)
+    _atomic_write_packet(packet_file, packet, expected_revision=revision)
+    return authorization
+
+
 def mark_awaiting_result_import(packet_path: Path | str) -> dict[str, Any]:
     packet_file = Path(packet_path).resolve()
     packet = load_packet(packet_file)
     revision = packet["state_revision"]
-    _require(packet["status"] == "READY_FOR_CHATGPT", f"cannot dispatch from status {packet['status']}")
+    required_status = "DISPATCH_AUTHORIZED" if packet["stage_id"] == "ASSET_PRODUCTION" else "READY_FOR_CHATGPT"
+    _require(packet["status"] == required_status, f"cannot dispatch from status {packet['status']}; requires {required_status}")
+    if packet["stage_id"] == "ASSET_PRODUCTION":
+        authorization = packet.get("dispatch_authorization")
+        _require(isinstance(authorization, dict), "asset production has no dispatch authorization")
+        _require(authorization.get("status") == "AUTHORIZED", "asset production dispatch is not authorized")
+        _require(
+            authorization.get("job_sha256") == _sha256_json(authorization.get("job")),
+            "asset production dispatch contract changed after authorization",
+        )
+        _verify_dispatch_job_against_packet(packet, authorization["job"])
     packet["status"] = "AWAITING_RESULT_IMPORT"
     _event(packet, "CHATGPT_STAGE_STARTED")
     _advance_revision(packet)
@@ -452,7 +549,7 @@ def resume_suspended_packet(
     _require(packet["status"] == "SUSPENDED", f"packet is not suspended: {packet['status']}")
     prior_status = packet.get("suspended_from_status")
     _require(
-        prior_status in {"READY_FOR_CHATGPT", "AWAITING_RESULT_IMPORT", "RESULT_REGISTERED"},
+        prior_status in {"READY_FOR_CHATGPT", "DISPATCH_AUTHORIZED", "AWAITING_RESULT_IMPORT", "RESULT_REGISTERED"},
         f"invalid suspended_from_status: {prior_status}",
     )
     packet["status"] = prior_status
@@ -533,6 +630,24 @@ def verify_packet(packet_path: Path | str, *, repo_root: Path | str) -> dict[str
         _require(stored.stat().st_size == asset["size_bytes"], f"registered asset size changed: {asset_id}")
         _require(_sha256_file(stored) == asset["sha256"], f"registered asset hash changed: {asset_id}")
 
+
+    if packet["stage_id"] == "ASSET_PRODUCTION" and packet["status"] in {
+        "DISPATCH_AUTHORIZED",
+        "AWAITING_RESULT_IMPORT",
+        "RESULT_REGISTERED",
+        "USER_APPROVED",
+    }:
+        authorization = packet.get("dispatch_authorization")
+        _require(isinstance(authorization, dict), "asset production packet is missing dispatch_authorization")
+        _require(authorization.get("status") == "AUTHORIZED", "asset production dispatch authorization is invalid")
+        job = authorization.get("job")
+        _require(isinstance(job, dict), "asset production dispatch job is missing")
+        _require(
+            authorization.get("job_sha256") == _sha256_json(job),
+            "asset production dispatch contract changed after authorization",
+        )
+        _verify_dispatch_job_against_packet(packet, job)
+
     if packet["status"] == "USER_APPROVED":
         selected_id = packet.get("selected_result_asset_id")
         _require(bool(selected_id), "approved packet has no selected_result_asset_id")
@@ -579,6 +694,10 @@ def main() -> None:
     add_input.add_argument("--role", required=True)
     add_input.add_argument("--media-type", choices=sorted(MEDIA_TYPES), required=True)
 
+    authorize_dispatch = sub.add_parser("authorize-dispatch", help="Authorize ASSET_PRODUCTION using bound media and visual contract")
+    authorize_dispatch.add_argument("--packet", required=True)
+    authorize_dispatch.add_argument("--job", required=True)
+
     dispatched = sub.add_parser("dispatched", help="Mark that a user-triggered ChatGPT stage has started")
     dispatched.add_argument("--packet", required=True)
 
@@ -623,6 +742,8 @@ def main() -> None:
                 role=args.role,
                 media_type=args.media_type,
             )
+        elif args.command == "authorize-dispatch":
+            result = authorize_asset_dispatch(packet_path=args.packet, job_path=args.job)
         elif args.command == "dispatched":
             result = mark_awaiting_result_import(args.packet)
         elif args.command == "add-result":

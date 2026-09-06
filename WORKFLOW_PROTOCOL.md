@@ -69,3 +69,24 @@ Child-specific filenames and role semantics stay in the child repository.
 The parent gate must remain asset-name-agnostic and project-agnostic.
 
 A child-specific guard may be stricter, but must not weaken MUST_SUPPLY_MEDIA.
+
+## Fail-closed asset dispatch
+
+`ASSET_PRODUCTION` is not an ordinary ChatGPT-assisted stage.
+
+Canonical transition:
+
+`READY_FOR_CHATGPT → AUTHORIZE_ASSET_DISPATCH → DISPATCH_AUTHORIZED → AWAITING_RESULT_IMPORT`
+
+Authorization binds, in one immutable job contract:
+- the exact work packet/project/episode/stage;
+- actual registered input asset IDs and SHA-256 evidence;
+- renderer capability for explicit media inputs;
+- prompt binding mode;
+- visual information ownership;
+- screen-bearing prop geometry when applicable.
+
+The runtime must not call an image/audio/video renderer before this authorization exists.
+A Markdown rule, a prompt description, an operator memory, or a repository path alone cannot substitute for bound media evidence.
+
+For screen-bearing props, the contract must resolve subject/display/camera visibility before generation. Contradictory geometry is a dispatch failure, not a QC retry.

@@ -52,6 +52,9 @@ def validate_policy(policy: dict) -> list[str]:
     _require(execution.get("on_subscription_limit") == "SUSPEND_AND_RESUME", "subscription limit must suspend and resume")
     _require(execution.get("user_trigger_required") is True, "subscription work must require a user trigger")
     _require(execution.get("unattended_subscription_invocation") is False, "unattended subscription invocation cannot be assumed")
+    _require(execution.get("asset_production_requires_authorized_packet") is True, "asset production must require an authorized packet")
+    _require(execution.get("asset_production_requires_bound_media_evidence") is True, "asset production must bind actual media evidence")
+    _require(execution.get("asset_production_requires_visual_contract") is True, "asset production must bind a visual contract")
 
     continuity = policy["continuity_policy"]
     _require(

@@ -23,7 +23,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.1"
+      "const": "1.2"
     },
     "packet_id": {
       "type": "string",
@@ -44,6 +44,7 @@
     "status": {
       "enum": [
         "READY_FOR_CHATGPT",
+        "DISPATCH_AUTHORIZED",
         "AWAITING_RESULT_IMPORT",
         "RESULT_REGISTERED",
         "USER_APPROVED",
@@ -271,6 +272,7 @@
         "type": {
           "enum": [
             "RUN_CHATGPT_ASSISTED_STAGE",
+            "AUTHORIZE_ASSET_DISPATCH",
             "IMPORT_CHATGPT_RESULT",
             "REVIEW_RESULT",
             "ADVANCE_STAGE",
@@ -286,6 +288,7 @@
     "suspended_from_status": {
       "enum": [
         "READY_FOR_CHATGPT",
+        "DISPATCH_AUTHORIZED",
         "AWAITING_RESULT_IMPORT",
         "RESULT_REGISTERED"
       ]
@@ -295,6 +298,32 @@
         "PROJECT",
         "EPISODE"
       ]
+    },
+    "dispatch_authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "job_sha256",
+        "job",
+        "authorized_at_utc"
+      ],
+      "properties": {
+        "status": {
+          "const": "AUTHORIZED"
+        },
+        "job_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "job": {
+          "type": "object"
+        },
+        "authorized_at_utc": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 }
