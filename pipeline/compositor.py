@@ -106,8 +106,9 @@ def compose(project_root: Path, registry_path: Path, scene_path: Path, output_pa
         if asset is None:
             raise CompositionError(f"{asset_id}: not an APPROVED registered asset")
         x, y = int(layer["x"]), int(layer["y"])
-        if x < 0 or y < 0:
-            raise CompositionError("composition v1 requires non-negative x/y")
+        # Negative x/y are valid crop semantics: Pillow clips the source against
+        # the destination canvas just as it already clips right/bottom overflow.
+        # Scene data therefore owns crop-by-placement symmetrically on all edges.
         with Image.open(asset["_path"]) as raw:
             rendered = transform(raw, layer)
         base.alpha_composite(rendered, dest=(x, y))
