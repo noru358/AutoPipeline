@@ -10,7 +10,9 @@
     "unattended_subscription_invocation": false,
     "asset_production_requires_authorized_packet": true,
     "asset_production_requires_bound_media_evidence": true,
-    "asset_production_requires_visual_contract": true
+    "asset_production_requires_visual_contract": true,
+    "pending_authority_change_blocks_dependent_execution": true,
+    "authority_commit_and_verify_before_dependent_dispatch": true
   },
   "continuity_policy": {
     "context_contamination_action": "HANDOFF_TO_NEW_SESSION",
