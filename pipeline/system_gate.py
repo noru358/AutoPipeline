@@ -75,7 +75,7 @@ def validate_policy(policy: dict) -> list[str]:
     quality = policy["quality_policy"]
     required_quality = {
         "hard_contract_qc_precedes_subjective_qc",
-        "sequence_qc_before_raster_user_gate",
+        "sequence_qc_before_final_art_gate",
         "fixed_direction_quotas_forbidden",
         "viewer_perceived_redundancy_review",
         "declared_semantic_intent_qc",
