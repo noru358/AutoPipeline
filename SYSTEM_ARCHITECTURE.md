@@ -89,6 +89,11 @@ become the default because the asset library has a gap.
 This preserves generated-image capability without forcing accepted identity/style/geometry to be
 re-sampled on every frame.
 
+Meaning-bearing lettering is a second deterministic composition layer. Child projects own copy,
+typographic grammar and placement intent; the shared runtime owns editable-plan execution, font/base
+byte verification and deterministic preview receipts. Calibration placeholders may use a runtime
+default font only for geometry/spec testing. Production lettering must bind project font bytes by SHA-256.
+
 ## 4. Tool ownership
 
 ChatGPT is preferred for research, editorial reasoning, drafts, image work when
@@ -202,7 +207,8 @@ The subscription-first artifact bridge now has an executable fail-closed dispatc
 This baseline proves storage, identity, approval locking, dispatch authorization and resume semantics. It
 does not yet prove the account-specific direct artifact handoff path.
 
-The next implementation milestone is the first editor slice: editable
-lettering/layout, candidate replacement, undo/redo, save/reopen and
-separate-frame export. After that, run one real end-to-end work packet with a
-subscription-generated image before expanding the editor or adding providers.
+The deterministic lettering/layout execution slice now exists as a JSON-plan renderer with
+hash-bound production fonts/base artwork and reproducible receipts. The next validation milestone is
+to use compositor + lettering together in a child calibration fixture, then run one real end-to-end
+work packet with approved production assets. Interactive editor concerns such as candidate replacement,
+undo/redo and visual save/reopen remain later implementation work.
