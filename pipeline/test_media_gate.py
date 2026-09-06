@@ -15,6 +15,9 @@ def base_job():
                 "conditioning":"MUST_SUPPLY_MEDIA",
                 "required":True,
                 "expected_hash":None,
+                "coverage_scope":["person_style"],
+                "allowed_influence":["face","eyes","linework"],
+                "requested_influence":["face","eyes"],
             }
         ],
         "renderer":{
@@ -71,6 +74,12 @@ class MediaGateTests(unittest.TestCase):
         job["renderer"]["supports_explicit_media_inputs"]=False
         self.assertEqual(authorize(job), "AUTHORIZED")
 
+    def test_blocks_reference_domain_overreach(self):
+        job=base_job()
+        job["requirements"][0]["requested_influence"]=["background_style"]
+        with self.assertRaisesRegex(GateError, "coverage_scope|allowed_influence"):
+            authorize(job)
+
     def test_audio_uses_same_contract(self):
         job=base_job()
         job["requirements"][0].update({
@@ -78,6 +87,9 @@ class MediaGateTests(unittest.TestCase):
             "media_type":"audio",
             "source_id":"child/assets/voice.wav",
         })
+        job["requirements"][0].pop("coverage_scope", None)
+        job["requirements"][0].pop("allowed_influence", None)
+        job["requirements"][0].pop("requested_influence", None)
         job["supplied"][0].update({
             "media_type":"audio",
             "source_id":"child/assets/voice.wav",
