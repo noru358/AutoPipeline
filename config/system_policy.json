@@ -109,12 +109,12 @@
   ],
   "quality_policy": {
     "hard_contract_qc_precedes_subjective_qc": true,
-    "sequence_qc_before_raster_user_gate": true,
     "fixed_direction_quotas_forbidden": true,
     "viewer_perceived_redundancy_review": true,
     "declared_semantic_intent_qc": true,
     "high_risk_interaction_geometry_qc": true,
     "rejected_output_quarantine": true,
-    "minimal_repair_scope": true
+    "minimal_repair_scope": true,
+    "sequence_qc_before_final_art_gate": true
   }
 }
