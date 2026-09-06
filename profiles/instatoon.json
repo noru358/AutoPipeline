@@ -1,0 +1,59 @@
+{
+  "profile_version": "1.0",
+  "project_id": "instatoon",
+  "content_family": "STORY_EMPATHY",
+  "creative_authority_root": "instatoon",
+  "creative_authority_refs": [
+    "SOURCE_STORY_PIPELINE.md",
+    "STYLE_LOCK.md",
+    "VISUAL_GRAMMAR.md",
+    "GENERATION_PROTOCOL.md"
+  ],
+  "episode_id_pattern": "^E[0-9]{3,}$",
+  "products": [
+    {
+      "id": "carousel",
+      "kind": "CAROUSEL",
+      "status": "ACTIVE",
+      "aspect_ratio": "4:5",
+      "delivery": "SEPARATE_FRAME_FILES"
+    },
+    {
+      "id": "vertical_motion",
+      "kind": "VERTICAL_MOTION",
+      "status": "PLANNED",
+      "aspect_ratio": "9:16",
+      "delivery": "VIDEO_FILE"
+    }
+  ],
+  "stage_overrides": {
+    "WORK_RESEARCH": {
+      "intent": "Study complete works for hook, dialogue-response rhythm, visual hierarchy and ending.",
+      "authority_refs": ["VISUAL_GRAMMAR.md"]
+    },
+    "RADAR": {
+      "intent": "Find traceable human-seeded anecdotes and preserve provenance.",
+      "authority_refs": ["SOURCE_STORY_PIPELINE.md"]
+    },
+    "EDITORIAL": {
+      "intent": "Turn source material into a distinct story-empathy experience without forcing recurring cast.",
+      "authority_refs": ["SOURCE_STORY_PIPELINE.md"]
+    },
+    "STORYBOARD": {
+      "intent": "Design slide roles, dialogue space, reactions and visual information ownership.",
+      "authority_refs": ["VISUAL_GRAMMAR.md"]
+    },
+    "ASSET_PRODUCTION": {
+      "intent": "Use actual style media and generate only the required text-free frame assets.",
+      "authority_refs": ["STYLE_LOCK.md", "GENERATION_PROTOCOL.md"]
+    },
+    "COMPOSITION": {
+      "intent": "Keep text, speech bubbles and messenger UI editable and separate from raster art.",
+      "authority_refs": ["VISUAL_GRAMMAR.md"]
+    },
+    "QC": {
+      "intent": "Separate deterministic defects, visual defects and taste decisions.",
+      "authority_refs": ["GENERATION_PROTOCOL.md"]
+    }
+  }
+}

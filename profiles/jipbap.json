@@ -1,0 +1,61 @@
+{
+  "profile_version": "1.0",
+  "project_id": "jipbap",
+  "content_family": "OBSERVATION_SENSORY",
+  "creative_authority_root": "jipbap",
+  "creative_authority_refs": [
+    "CONTENT_SYSTEM.md",
+    "FOOD_STATE_SYSTEM.md",
+    "MEAL_CONTEXT_SYSTEM.md",
+    "VISUAL_SYSTEM.md",
+    "VOICE_SYSTEM.md",
+    "PRODUCTION_PROTOCOL.md"
+  ],
+  "episode_id_pattern": "^[0-9]{3,}$",
+  "products": [
+    {
+      "id": "carousel",
+      "kind": "CAROUSEL",
+      "status": "ACTIVE",
+      "aspect_ratio": "4:5",
+      "delivery": "SEPARATE_FRAME_FILES"
+    },
+    {
+      "id": "vertical_motion",
+      "kind": "VERTICAL_MOTION",
+      "status": "PLANNED",
+      "aspect_ratio": "9:16",
+      "delivery": "VIDEO_FILE"
+    }
+  ],
+  "stage_overrides": {
+    "WORK_RESEARCH": {
+      "intent": "Study complete food works for focal scale, appetite, silence, rhythm and visual restraint.",
+      "authority_refs": ["CONTENT_SYSTEM.md", "VISUAL_SYSTEM.md"]
+    },
+    "RADAR": {
+      "intent": "Collect concrete meal moments with enough context to render a believable food state.",
+      "authority_refs": ["CONTENT_SYSTEM.md", "MEAL_CONTEXT_SYSTEM.md"]
+    },
+    "EDITORIAL": {
+      "intent": "Choose one sensory change or eating moment without forcing story-comic reversal or recipe exposition.",
+      "authority_refs": ["CONTENT_SYSTEM.md", "VOICE_SYSTEM.md"]
+    },
+    "STORYBOARD": {
+      "intent": "Design food-state transitions, hands and utensils, focal areas and silent beats.",
+      "authority_refs": ["FOOD_STATE_SYSTEM.md", "MEAL_CONTEXT_SYSTEM.md"]
+    },
+    "ASSET_PRODUCTION": {
+      "intent": "Bind actual meal and style references and render physically and culturally coherent food states.",
+      "authority_refs": ["FOOD_STATE_SYSTEM.md", "MEAL_CONTEXT_SYSTEM.md", "VISUAL_SYSTEM.md"]
+    },
+    "COMPOSITION": {
+      "intent": "Keep lettering editable and protect the food focal area.",
+      "authority_refs": ["VISUAL_SYSTEM.md", "VOICE_SYSTEM.md"]
+    },
+    "QC": {
+      "intent": "Check food state, contact geometry, meal context, sensory readability and lettering separately.",
+      "authority_refs": ["PRODUCTION_PROTOCOL.md", "VISUAL_SYSTEM.md"]
+    }
+  }
+}

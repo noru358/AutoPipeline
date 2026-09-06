@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "system_id": "autopipeline-toon-production",
+  "execution_policy": {
+    "ai_mode": "CHATGPT_SUBSCRIPTION_FIRST",
+    "additional_paid_ai_budget_krw": 0,
+    "allow_paid_fallback": false,
+    "on_subscription_limit": "SUSPEND_AND_RESUME",
+    "user_trigger_required": true,
+    "unattended_subscription_invocation": false
+  },
+  "continuity_policy": {
+    "context_contamination_action": "HANDOFF_TO_NEW_SESSION",
+    "contamination_signals": [
+      "confirmed rule is repeatedly missed",
+      "retired decision reappears as active",
+      "conversation claims conflict with repository authority",
+      "same correction repeats without a new diagnosis",
+      "current artifact identity or approval scope becomes uncertain"
+    ],
+    "handoff_required_fields": [
+      "verified_repository_heads",
+      "current_system_stage",
+      "completed_work",
+      "active_decisions",
+      "approved_artifacts",
+      "open_blockers",
+      "next_single_action"
+    ]
+  },
+  "canonical_stages": [
+    {"id": "WORK_RESEARCH", "order": 1, "owner": "CHATGPT_ASSISTED"},
+    {"id": "RADAR", "order": 2, "owner": "CHATGPT_ASSISTED"},
+    {"id": "EDITORIAL", "order": 3, "owner": "CHATGPT_ASSISTED"},
+    {"id": "STORYBOARD", "order": 4, "owner": "CHATGPT_ASSISTED"},
+    {"id": "ASSET_PRODUCTION", "order": 5, "owner": "HYBRID"},
+    {"id": "COMPOSITION", "order": 6, "owner": "PROGRAM"},
+    {"id": "QC", "order": 7, "owner": "HYBRID"},
+    {"id": "EXPORT", "order": 8, "owner": "PROGRAM"},
+    {"id": "RETROSPECTIVE", "order": 9, "owner": "HYBRID"}
+  ],
+  "program_responsibilities": [
+    "persistent_project_state",
+    "asset_identity_and_hashes",
+    "approval_version_binding",
+    "editable_text_ui_and_layout",
+    "deterministic_composition",
+    "targeted_invalidation",
+    "resume_from_saved_artifact",
+    "export"
+  ],
+  "chatgpt_responsibilities": [
+    "source_research",
+    "editorial_reasoning",
+    "story_and_storyboard_drafting",
+    "image_generation_when_available",
+    "visual_review_when_actual_media_is_available"
+  ]
+}

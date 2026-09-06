@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AutoPipeline System Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "system_id",
+    "execution_policy",
+    "continuity_policy",
+    "canonical_stages",
+    "program_responsibilities",
+    "chatgpt_responsibilities"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "system_id": {"type": "string", "minLength": 1},
+    "execution_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ai_mode",
+        "additional_paid_ai_budget_krw",
+        "allow_paid_fallback",
+        "on_subscription_limit",
+        "user_trigger_required",
+        "unattended_subscription_invocation"
+      ],
+      "properties": {
+        "ai_mode": {"const": "CHATGPT_SUBSCRIPTION_FIRST"},
+        "additional_paid_ai_budget_krw": {"const": 0},
+        "allow_paid_fallback": {"const": false},
+        "on_subscription_limit": {"const": "SUSPEND_AND_RESUME"},
+        "user_trigger_required": {"const": true},
+        "unattended_subscription_invocation": {"const": false}
+      }
+    },
+    "continuity_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_contamination_action", "contamination_signals", "handoff_required_fields"],
+      "properties": {
+        "context_contamination_action": {"const": "HANDOFF_TO_NEW_SESSION"},
+        "contamination_signals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
+        "handoff_required_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true}
+      }
+    },
+    "canonical_stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "order", "owner"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]+$"},
+          "order": {"type": "integer", "minimum": 1},
+          "owner": {"enum": ["CHATGPT_ASSISTED", "PROGRAM", "HYBRID"]}
+        }
+      }
+    },
+    "program_responsibilities": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
+    "chatgpt_responsibilities": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true}
+  }
+}

@@ -5,6 +5,7 @@ The child repositories are the creative/project authorities.
 Current children:
 - instatoon
 - talkshow
+- jipbap
 
 ## Update order
 
@@ -17,6 +18,32 @@ When a child changes:
 Do not copy child Markdown/prompt state into the parent.
 
 The parent exists to pin an exact compatible combination of child commits and later host generic automation code.
+The parent now also owns executable cross-project system policy and validation.
+It still does not own child creative voice, style, source policy, or episode facts.
+
+## Three-level production authority
+
+1. System level: `SYSTEM_ARCHITECTURE.md` and `config/system_policy.json`.
+2. Workflow level: the canonical stages in system policy.
+3. Method level: child authority documents routed by `profiles/*.json`.
+
+Episode-specific facts remain in the child episode data. Promote a rule only at
+the narrowest scope that explains the repeat pattern.
+
+## Context contamination
+
+If confirmed rules are repeatedly missed, retired decisions reappear, repository
+authority conflicts with conversation claims, or artifact/approval identity is
+uncertain, stop. Save the mandatory handoff fields declared in system policy and
+recommend continuing in a new session. The new session must re-read repository
+authority instead of relying on conversational recall.
+
+## Cost and execution default
+
+The initial shared policy is ChatGPT-subscription-first. Paid API or SaaS
+fallback is disabled and the additional paid AI budget is KRW 0. When the
+subscription path is unavailable, persist the current result and suspend. Do not
+treat ChatGPT subscription access as an unattended external model API.
 
 ## Restore
 

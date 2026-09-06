@@ -1,15 +1,18 @@
-name: generic-media-gate
+name: production-contracts
 
 on:
   push:
   pull_request:
 
 jobs:
-  test-media-gate:
+  test-production-contracts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m unittest pipeline.test_media_gate
+      - run: python -m pipeline.system_gate
+      - run: python -m unittest discover -s pipeline -p 'test_*.py'
