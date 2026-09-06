@@ -56,6 +56,7 @@ def validate_policy(policy: dict) -> list[str]:
     _require(execution.get("asset_production_requires_authorized_packet") is True, "asset production must require an authorized packet")
     _require(execution.get("asset_production_requires_bound_media_evidence") is True, "asset production must bind actual media evidence")
     _require(execution.get("asset_production_requires_visual_contract") is True, "asset production must bind a visual contract")
+    _require(execution.get("asset_production_requires_dispatch_receipt") is True, "asset production must record a post-dispatch media binding receipt")
 
     continuity = policy["continuity_policy"]
     _require(
