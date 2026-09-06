@@ -57,7 +57,7 @@ class SystemGateTests(unittest.TestCase):
 
     def test_requires_shared_sequence_quality_policy(self):
         policy = copy.deepcopy(self.policy)
-        policy["quality_policy"]["sequence_qc_before_raster_user_gate"] = False
+        policy["quality_policy"]["sequence_qc_before_final_art_gate"] = False
         with self.assertRaises(SystemGateError):
             validate_system(policy, self.profiles)
 
