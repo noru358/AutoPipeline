@@ -79,6 +79,7 @@ class ArtifactBridgeTests(unittest.TestCase):
             repo_root=self.root,
             policy_path="config/system_policy.json",
             profile_path="profiles/instatoon.json",
+            work_scope="EPISODE",
             episode_id="E001",
             stage_id="ASSET_PRODUCTION",
             packet_path=self.packet,
@@ -208,12 +209,42 @@ class ArtifactBridgeTests(unittest.TestCase):
         self.assertEqual(resumed["status"], "AWAITING_RESULT_IMPORT")
         self.assertEqual(resumed["next_action"]["type"], "IMPORT_CHATGPT_RESULT")
 
+    def test_project_scoped_packet_does_not_require_fake_episode(self):
+        packet_path = self.root / "workspaces" / "instatoon" / "PROJECT" / "EDITORIAL" / "packet.json"
+        packet = create_packet(
+            repo_root=self.root,
+            policy_path="config/system_policy.json",
+            profile_path="profiles/instatoon.json",
+            work_scope="PROJECT",
+            episode_id=None,
+            stage_id="EDITORIAL",
+            packet_path=packet_path,
+            packet_id="project-packet-test",
+        )
+        self.assertEqual(packet["work_scope"], "PROJECT")
+        self.assertNotIn("episode_id", packet)
+        self.assertEqual(packet["packet_id"], "project-packet-test")
+
+    def test_project_scope_rejects_episode_id(self):
+        packet_path = self.root / "workspaces" / "instatoon" / "PROJECT" / "EDITORIAL" / "packet.json"
+        with self.assertRaises(BridgeError):
+            create_packet(
+                repo_root=self.root,
+                policy_path="config/system_policy.json",
+                profile_path="profiles/instatoon.json",
+                work_scope="PROJECT",
+                episode_id="E001",
+                stage_id="EDITORIAL",
+                packet_path=packet_path,
+            )
+
     def test_invalid_episode_id_is_rejected(self):
         with self.assertRaises(BridgeError):
             create_packet(
                 repo_root=self.root,
                 policy_path="config/system_policy.json",
                 profile_path="profiles/instatoon.json",
+                work_scope="EPISODE",
                 episode_id="002",
                 stage_id="ASSET_PRODUCTION",
                 packet_path=self.packet,
