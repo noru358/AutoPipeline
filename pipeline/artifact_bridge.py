@@ -291,10 +291,19 @@ def _register_asset(
     packet = load_packet(packet_file)
     revision = packet["state_revision"]
 
-    if kind == "result":
+    _require(
+        packet["status"] != "USER_APPROVED",
+        "approved packet is locked; no input or result assets may be changed",
+    )
+    if kind == "input":
         _require(
-            packet["status"] != "USER_APPROVED",
-            "approved packet is locked; do not regenerate or register a replacement result",
+            packet["status"] == "READY_FOR_CHATGPT",
+            f"input assets must be finalized before dispatch; current status is {packet['status']}",
+        )
+    else:
+        _require(
+            packet["status"] in {"AWAITING_RESULT_IMPORT", "RESULT_REGISTERED"},
+            f"result import requires a dispatched packet; current status is {packet['status']}",
         )
 
     source = Path(source_path).resolve()
@@ -400,22 +409,37 @@ def suspend_packet(packet_path: Path | str, reason: str) -> dict[str, Any]:
     packet = load_packet(packet_file)
     revision = packet["state_revision"]
     _require(packet["status"] != "USER_APPROVED", "approved packet is already complete and locked")
+    packet["suspended_from_status"] = packet["status"]
     packet["status"] = "SUSPENDED"
-    _event(packet, "PACKET_SUSPENDED", {"reason": reason})
+    _event(
+        packet,
+        "PACKET_SUSPENDED",
+        {"reason": reason, "from_status": packet["suspended_from_status"]},
+    )
     _advance_revision(packet)
     packet["next_action"] = _compute_next_action(packet)
     _atomic_write_packet(packet_file, packet, expected_revision=revision)
     return packet
 
 
-def resume_suspended_packet(packet_path: Path | str) -> dict[str, Any]:
+def resume_suspended_packet(
+    packet_path: Path | str,
+    *,
+    repo_root: Path | str,
+) -> dict[str, Any]:
     packet_file = Path(packet_path).resolve()
+    verify_packet(packet_file, repo_root=repo_root)
     packet = load_packet(packet_file)
     revision = packet["state_revision"]
     _require(packet["status"] == "SUSPENDED", f"packet is not suspended: {packet['status']}")
-    has_result = any(asset.get("kind") == "result" for asset in packet["assets"])
-    packet["status"] = "RESULT_REGISTERED" if has_result else "READY_FOR_CHATGPT"
-    _event(packet, "PACKET_RESUMED")
+    prior_status = packet.get("suspended_from_status")
+    _require(
+        prior_status in {"READY_FOR_CHATGPT", "AWAITING_RESULT_IMPORT", "RESULT_REGISTERED"},
+        f"invalid suspended_from_status: {prior_status}",
+    )
+    packet["status"] = prior_status
+    packet.pop("suspended_from_status", None)
+    _event(packet, "PACKET_RESUMED", {"restored_status": prior_status})
     _advance_revision(packet)
     packet["next_action"] = _compute_next_action(packet)
     _atomic_write_packet(packet_file, packet, expected_revision=revision)
@@ -553,8 +577,9 @@ def main() -> None:
     suspend.add_argument("--packet", required=True)
     suspend.add_argument("--reason", required=True)
 
-    resume_suspended = sub.add_parser("resume-suspended", help="Resume a user-triggered suspended packet")
+    resume_suspended = sub.add_parser("resume-suspended", help="Verify and resume a user-triggered suspended packet")
     resume_suspended.add_argument("--packet", required=True)
+    resume_suspended.add_argument("--repo-root", default=".")
 
     verify = sub.add_parser("verify", help="Reopen and verify authority/assets/approval before resuming")
     verify.add_argument("--packet", required=True)
@@ -592,7 +617,7 @@ def main() -> None:
         elif args.command == "suspend":
             result = suspend_packet(args.packet, args.reason)
         elif args.command == "resume-suspended":
-            result = resume_suspended_packet(args.packet)
+            result = resume_suspended_packet(args.packet, repo_root=args.repo_root)
         elif args.command == "verify":
             result = verify_packet(args.packet, repo_root=args.repo_root)
         else:
