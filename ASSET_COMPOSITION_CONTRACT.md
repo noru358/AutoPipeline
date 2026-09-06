@@ -28,7 +28,7 @@ This contract does not require every child project to use the same degree of mod
    Final composition fails closed on missing, rejected, retired, stale or hash-mismatched assets.
 
 4. **Final layout is deterministic.**
-   Asset IDs, source hashes, layer order, transforms, crop/mask and text/UI plans are durable scene data.
+   Asset IDs, source hashes, layer order, transforms, crop-by-placement and text/UI plans are durable scene data. Optional geometry features such as masks/anchors become authoritative only when the shared runtime and schema actually implement them; documentation must not claim unsupported composition capability.
 
 5. **Text/UI stays editable.**
    Meaning-bearing lettering and deterministic interface state are not baked into generative visual assets by default.
