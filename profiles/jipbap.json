@@ -50,14 +50,14 @@
       ]
     },
     "EDITORIAL": {
-      "intent": "Choose one sensory change or eating moment without forcing story-comic reversal or recipe exposition.",
+      "intent": "Define the PROXY_EATER audience promise and choose a menu-specific appetite arc with concrete sensory payoffs rather than mere chronological eating steps.",
       "authority_refs": [
         "CONTENT_SYSTEM.md",
         "VOICE_SYSTEM.md"
       ]
     },
     "STORYBOARD": {
-      "intent": "Design sensory-route body beats, food-state transitions, meal-scene continuity, recurring-subject identity requirements, visual coverage/delta rhythm, high-risk interaction geometry, silent beats, and a separate mandatory product-cover brief.",
+      "intent": "Design appetite/sensory beats, observable visual cues, food-state transitions, entity visibility allowlists, background scope, recurring-subject identity requirements, visual delta rhythm, high-risk interaction geometry, and a separate mandatory product-cover brief.",
       "authority_refs": [
         "CONTENT_SYSTEM.md",
         "FOOD_STATE_SYSTEM.md",
@@ -66,7 +66,7 @@
       ]
     },
     "ASSET_PRODUCTION": {
-      "intent": "Bind actual style/identity media and render only the current body state with episode-local subject identity, declared coverage, physically coherent anatomy/contact geometry, meal-scene continuity, and cross-domain illustration coherence.",
+      "intent": "Bind actual domain-scoped style/identity media and render only the current shot contract with observable appetite cues, entity allowlists, physically coherent anatomy/contact geometry, meal-scene continuity, and cross-domain illustration coherence.",
       "authority_refs": [
         "FOOD_STATE_SYSTEM.md",
         "MEAL_CONTEXT_SYSTEM.md",
@@ -82,7 +82,7 @@
       ]
     },
     "QC": {
-      "intent": "Run hard identity/style-domain/anatomy/contact and food-state checks first, then viewer-perceived whole-sequence coverage/redundancy QC; require the separate cover slot before final carousel completion and repair only the minimum invalid scope.",
+      "intent": "Run hard reference-domain, person-style, entity-allowlist, identity, anatomy/contact and food-state checks first, then appetite/proxy-eater and viewer-perceived sequence QC; require locked composition templates before completion.",
       "authority_refs": [
         "PRODUCTION_PROTOCOL.md",
         "VISUAL_SYSTEM.md"
