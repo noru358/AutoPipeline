@@ -20,7 +20,8 @@
       "conversation claims conflict with repository authority",
       "same correction repeats without a new diagnosis",
       "current artifact identity or approval scope becomes uncertain",
-      "same hard output contract fails twice in one conversational render context"
+      "same hard output contract fails twice in one conversational render context",
+      "observed future-shot or multi-shot leakage in renderer dispatch or output"
     ],
     "handoff_required_fields": [
       "verified_repository_heads",
@@ -33,7 +34,11 @@
       "quarantined_outputs"
     ],
     "unsafe_context_is_sticky": true,
-    "post_threshold_outputs_quarantined": true
+    "post_threshold_outputs_quarantined": true,
+    "ambient_conversation_context_is_not_contamination": true,
+    "renderer_dispatch_capsule_isolation": "TARGET_ONLY_AT_CALL_BOUNDARY",
+    "same_session_allowed_when_dispatch_and_output_qc_pass": true,
+    "new_session_requires_contamination_evidence_or_identity_uncertainty": true
   },
   "canonical_stages": [
     {
