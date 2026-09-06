@@ -48,6 +48,23 @@ python -m unittest discover -s pipeline -p 'test_*.py'
 
 The initial policy uses user-triggered ChatGPT subscription work, sets additional paid AI budget to KRW 0, disables paid fallback, and requires suspend/resume when subscription usage is unavailable.
 
+## Deterministic final composition
+
+Toon projects now use the boundary in `ASSET_COMPOSITION_CONTRACT.md`:
+generation authors missing assets; the default final frame is assembled from approved hash-bound assets.
+
+Shared compositor:
+
+```bash
+python -m pipeline.compositor \
+  --project-root instatoon \
+  --registry assets/production/registry.json \
+  --scene instatoon/episodes/E001/composition/slide_01.json \
+  --output instatoon/episodes/E001/renders/slide_01_art.png
+```
+
+Use `--project-root jipbap` for the food project. The child owns asset categories and visual semantics; the parent compositor owns byte verification, transforms, layer order and a composition receipt.
+
 ## Durable artifact bridge
 
 `pipeline/artifact_bridge.py` is the first executable subscription-first runtime layer.
