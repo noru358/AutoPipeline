@@ -31,7 +31,8 @@ Child projects declare requirements; renderer adapters declare capabilities; the
 
 The shared subscription-first architecture for instatoon and jipbap is governed by:
 
-- `SYSTEM_ARCHITECTURE.md`\n- `ASSET_COMPOSITION_CONTRACT.md`
+- `SYSTEM_ARCHITECTURE.md`
+- `ASSET_COMPOSITION_CONTRACT.md`
 - `config/system_policy.json`
 - `profiles/instatoon.json`
 - `profiles/jipbap.json`
