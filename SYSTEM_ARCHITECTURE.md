@@ -169,6 +169,8 @@ Change order:
 3. update shared policy/code only for a genuine cross-project invariant;
 4. verify child commits, then advance superproject submodule pointers.
 
+A pending authority change is itself an execution blocker for any stage that depends on that change. Conversation-level agreement does not substitute for committed canonical authority.
+
 ## 9. Implementation milestones
 
 The subscription-first artifact bridge now has an executable fail-closed dispatch baseline:
