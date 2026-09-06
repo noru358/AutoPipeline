@@ -44,6 +44,23 @@ Stop and hand off to a new session only when a configured contamination signal i
 
 The unsafe-context decision is sticky once that evidence threshold is crossed: a later superficially acceptable output in the same contaminated context does not clear the blocker. Quarantine all post-threshold outputs from anchor/repair/continuity use until the target is reproduced or explicitly revalidated in a clean context. The new session must re-read repository authority instead of relying on conversational recall.
 
+## Authority-before-execution barrier
+
+When the user changes a structural rule that affects an upcoming stage, the canonical authority must be updated, committed, and verified **before** executing that dependent stage.
+
+Do not:
+- discuss a structural change,
+- keep the repository on the old rule,
+- then render using an uncommitted conversational interpretation.
+
+The safe order is:
+1. classify the change at the narrowest correct scope;
+2. update child and/or parent authority;
+3. verify the resulting HEADs and compatibility;
+4. only then execute the dependent render/composition/QC step.
+
+This is a cross-project execution invariant. Project-specific creative content remains child-owned.
+
 ## Shared sequential-asset QC
 
 Before a complete raster-set user gate, every child using sequential generated assets must apply the common quality envelope from system policy:
