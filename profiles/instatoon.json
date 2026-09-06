@@ -9,7 +9,8 @@
     "VISUAL_GRAMMAR.md",
     "GENERATION_PROTOCOL.md",
     "MASTER_PROMPTS.md",
-    "REFERENCE_SET.md"
+    "REFERENCE_SET.md",
+    "ASSET_COMPOSITION_PROTOCOL.md"
   ],
   "episode_id_pattern": "^E[0-9]{3,}$",
   "products": [
@@ -54,8 +55,9 @@
       ]
     },
     "ASSET_PRODUCTION": {
-      "intent": "Bind actual style/reference media, compile the canonical production prompt, and generate only the current text-free frame under the approved visual contract.",
+      "intent": "Resolve the approved production registry and author/QC/register only missing reusable or episode-local visual assets. Full-frame generation is an explicit exception lane, not the default final renderer.",
       "authority_refs": [
+        "ASSET_COMPOSITION_PROTOCOL.md",
         "STYLE_LOCK.md",
         "MASTER_PROMPTS.md",
         "GENERATION_PROTOCOL.md",
@@ -63,8 +65,9 @@
       ]
     },
     "COMPOSITION": {
-      "intent": "Keep text, speech bubbles and messenger UI editable and separate from raster art.",
+      "intent": "Build each final text-free frame deterministically from approved hash-bound asset IDs and transforms, then keep lettering, speech bubbles and messenger UI editable and separate.",
       "authority_refs": [
+        "ASSET_COMPOSITION_PROTOCOL.md",
         "VISUAL_GRAMMAR.md"
       ]
     },
@@ -76,4 +79,4 @@
       ]
     }
   }
-}
+}\n
