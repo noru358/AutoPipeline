@@ -30,6 +30,18 @@ It still does not own child creative voice, style, source policy, or episode fac
 Episode-specific facts remain in the child episode data. Promote a rule only at
 the narrowest scope that explains the repeat pattern.
 
+## Asset-authoring / final-composition boundary
+
+For toon projects opted into `ASSET_COMPOSITION_CONTRACT.md`:
+
+- `ASSET_PRODUCTION` resolves the approved registry and authors only missing assets;
+- a missing pose/food state/prop/background is an `ASSET_GAP`, not an automatic full-frame render request;
+- `COMPOSITION` is the default owner of final frame pixels, transforms, layer order and editable layout;
+- child-specific generative QC still applies when creating a new asset;
+- a full-frame stochastic result requires an explicit child-declared exception.
+
+Do not route the system back to per-frame generation merely because old child prompts/render adapters still exist for compatibility.
+
 ## Context contamination
 
 The existence of full storyboards, future-shot plans, or prior work somewhere in the operator/chat conversation is **not by itself a contamination signal**.
