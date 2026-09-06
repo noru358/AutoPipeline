@@ -189,12 +189,12 @@ def authorize(job: dict) -> str:
                 and all(isinstance(x, str) and x.strip() for x in requested_influence),
                 f"{rid}: requested_influence must be a non-empty string list",
             )
+            # coverage_scope names the semantic/domain coverage of the reference
+            # (for example person_style). allowed/requested_influence names concrete
+            # attributes the renderer may borrow (for example face or linework).
+            # They are intentionally separate namespaces and must not be compared
+            # as though one were a subset of the other.
             requested = set(requested_influence)
-            if coverage_scope is not None:
-                _require(
-                    requested <= set(coverage_scope),
-                    f"{rid}: requested influence exceeds reference coverage_scope",
-                )
             if allowed_influence is not None:
                 _require(
                     requested <= set(allowed_influence),
