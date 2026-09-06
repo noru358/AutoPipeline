@@ -38,6 +38,9 @@ The shared subscription-first architecture for instatoon and jipbap is governed 
 - `schemas/system_policy.schema.json`
 - `schemas/project_profile.schema.json`
 - `pipeline/system_gate.py`
+- `ARTIFACT_BRIDGE.md`
+- `schemas/work_packet.schema.json`
+- `pipeline/artifact_bridge.py`
 
 Validate the system contract and all current Python gates:
 
@@ -47,3 +50,12 @@ python -m unittest discover -s pipeline -p 'test_*.py'
 ```
 
 The initial policy uses user-triggered ChatGPT subscription work, sets additional paid AI budget to KRW 0, disables paid fallback, and requires suspend/resume when subscription usage is unavailable.
+
+Create and resume a versioned subscription work packet with:
+
+```bash
+python -m pipeline.artifact_bridge --help
+```
+
+The initial bridge uses explicit file import. It does not invoke a model or
+claim that the subscription can be called as an unattended API.

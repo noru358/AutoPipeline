@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AutoPipeline Subscription Work Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packet_version",
+    "packet_id",
+    "revision",
+    "project_id",
+    "episode_id",
+    "stage",
+    "status",
+    "execution_mode",
+    "transfer_mode",
+    "created_at",
+    "updated_at",
+    "source_control",
+    "authority_snapshot",
+    "inputs",
+    "artifacts",
+    "events",
+    "next_action"
+  ],
+  "properties": {
+    "packet_version": {"const": "1.0"},
+    "packet_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "episode_id": {"type": "string", "minLength": 1},
+    "stage": {"type": "string", "minLength": 1},
+    "status": {"enum": ["AWAITING_CHATGPT", "RESULT_REGISTERED", "SUSPENDED"]},
+    "execution_mode": {"const": "CHATGPT_SUBSCRIPTION_FIRST"},
+    "transfer_mode": {"enum": ["MANUAL_IMPORT", "DIRECT_INTEGRATION"]},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "source_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parent_commit", "child_commit"],
+      "properties": {
+        "parent_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "child_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "authority_snapshot": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["input_id", "role", "path", "sha256", "size_bytes", "source", "captured_at"],
+        "properties": {
+          "input_id": {"type": "string", "minLength": 1},
+          "role": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "size_bytes": {"type": "integer", "minimum": 1},
+          "source": {"const": "EXPLICIT_IMPORT"},
+          "captured_at": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact_id", "role", "path", "sha256", "size_bytes", "source", "registered_at"],
+        "properties": {
+          "artifact_id": {"type": "string", "minLength": 1},
+          "role": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "size_bytes": {"type": "integer", "minimum": 1},
+          "source": {"const": "CHATGPT_IMPORT"},
+          "registered_at": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "at", "detail"],
+        "properties": {
+          "type": {"enum": ["CREATED", "ARTIFACT_REGISTERED", "SUSPENDED", "RESUMED"]},
+          "at": {"type": "string", "format": "date-time"},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "suspension_reason": {"type": ["string", "null"]},
+    "next_action": {"type": "string", "minLength": 1}
+  }
+}

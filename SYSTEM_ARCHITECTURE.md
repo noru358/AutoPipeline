@@ -130,15 +130,21 @@ Change order:
 3. update shared policy/code only for a genuine cross-project invariant;
 4. verify child commits, then advance superproject submodule pointers.
 
-## 8. First implementation milestone
+## 8. Implemented artifact-bridge milestone
 
-The next milestone is a subscription-first artifact bridge:
+The first subscription-first artifact bridge is implemented in
+`pipeline/artifact_bridge.py` and governed by `schemas/work_packet.schema.json`.
+It can:
 
 1. create a saved work packet for one selected stage;
 2. supply the exact child authority and actual media required for that packet;
 3. register a ChatGPT-produced result as a real asset with identity and hash;
 4. reopen it in a new process and resume from the saved next action;
-5. keep manual import visible if direct transfer is unavailable.
+5. keep manual import visible if direct transfer is unavailable;
+6. reject a stale revision or modified authority/artifact bytes.
 
-The first editor milestone follows that bridge: editable lettering/layout,
+The bridge itself does not invoke ChatGPT and direct artifact transfer remains
+unverified. `ARTIFACT_BRIDGE.md` defines the current explicit-import workflow.
+
+The next editor milestone follows the bridge: editable lettering/layout,
 candidate replacement, undo/redo, save/reopen and separate-frame export.
