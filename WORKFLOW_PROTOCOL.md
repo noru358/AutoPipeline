@@ -32,11 +32,21 @@ the narrowest scope that explains the repeat pattern.
 
 ## Context contamination
 
-If confirmed rules are repeatedly missed, retired decisions reappear, repository
-authority conflicts with conversation claims, or artifact/approval identity is
-uncertain, stop. Save the mandatory handoff fields declared in system policy and
-recommend continuing in a new session. The new session must re-read repository
-authority instead of relying on conversational recall.
+If confirmed rules are repeatedly missed, retired decisions reappear, repository authority conflicts with conversation claims, artifact/approval identity is uncertain, or the same hard render contract fails twice in one conversational render context, stop. Save the mandatory handoff fields declared in system policy and continue in a new session.
+
+The unsafe-context decision is sticky: a later superficially acceptable output in the same contaminated context does not clear the blocker. Quarantine all post-threshold outputs from anchor/repair/continuity use until the target is reproduced or explicitly revalidated in a clean context. The new session must re-read repository authority instead of relying on conversational recall.
+
+## Shared sequential-asset QC
+
+Before a complete raster-set user gate, every child using sequential generated assets must apply the common quality envelope from system policy:
+- contract/identity/geometry checks before taste review;
+- viewer-perceived sequence redundancy review without direction quotas;
+- declared semantic-intent fidelity;
+- high-risk interaction/anatomy/contact geometry review appropriate to the child domain;
+- rejected-output quarantine;
+- minimum-scope repair instead of whole-set regeneration by default.
+
+Project-specific criteria stay in the child authority. Do not copy an instatoon emotion rule or a jipbap food rule into the shared parent merely because it caused one failure.
 
 ## Cost and execution default
 
