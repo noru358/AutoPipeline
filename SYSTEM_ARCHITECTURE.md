@@ -130,15 +130,21 @@ Change order:
 3. update shared policy/code only for a genuine cross-project invariant;
 4. verify child commits, then advance superproject submodule pointers.
 
-## 8. First implementation milestone
+## 8. Implementation milestones
 
-The next milestone is a subscription-first artifact bridge:
+The subscription-first artifact bridge now has an executable baseline:
 
-1. create a saved work packet for one selected stage;
-2. supply the exact child authority and actual media required for that packet;
-3. register a ChatGPT-produced result as a real asset with identity and hash;
-4. reopen it in a new process and resume from the saved next action;
-5. keep manual import visible if direct transfer is unavailable.
+1. a stage work packet snapshots the exact child authority used for that stage;
+2. actual input and ChatGPT-produced result bytes are copied into the packet package and SHA-256 identified;
+3. explicit user approval is bound to one immutable result hash;
+4. reopening verifies authority and asset bytes before returning a safe next action;
+5. approved packets reject replacement result registration;
+6. manual import remains explicit until direct ChatGPT-to-runtime transfer is verified.
 
-The first editor milestone follows that bridge: editable lettering/layout,
-candidate replacement, undo/redo, save/reopen and separate-frame export.
+This baseline proves storage, identity, approval locking and resume semantics. It
+does not yet prove the account-specific direct artifact handoff path.
+
+The next implementation milestone is the first editor slice: editable
+lettering/layout, candidate replacement, undo/redo, save/reopen and
+separate-frame export. After that, run one real end-to-end work packet with a
+subscription-generated image before expanding the editor or adding providers.
