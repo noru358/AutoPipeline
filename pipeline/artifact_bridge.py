@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from pipeline.media_gate import GateError as MediaGateError, authorize as authorize_media
+from pipeline.dispatch_receipt import ReceiptError as DispatchReceiptError, verify_dispatch_receipt
 
 
 SCHEMA_VERSION = "1.2"
@@ -187,7 +188,7 @@ def _compute_next_action(packet: dict[str, Any]) -> dict[str, str]:
     if status == "DISPATCH_AUTHORIZED":
         return {
             "type": "RUN_CHATGPT_ASSISTED_STAGE",
-            "instruction": "The asset-production dispatch is authorized; use exactly the bound media and visual contract.",
+            "instruction": "Run the renderer with exactly the authorized media bindings and record a post-dispatch receipt proving explicit media inputs before importing any result.",
         }
     if status == "AWAITING_RESULT_IMPORT":
         return {
@@ -240,6 +241,7 @@ def create_packet(
     _require(execution.get("asset_production_requires_authorized_packet") is True, "asset production authorization policy must be enabled")
     _require(execution.get("asset_production_requires_bound_media_evidence") is True, "bound media evidence policy must be enabled")
     _require(execution.get("asset_production_requires_visual_contract") is True, "visual contract policy must be enabled")
+    _require(execution.get("asset_production_requires_dispatch_receipt") is True, "dispatch receipt policy must be enabled")
 
     stage_ids = [stage.get("id") for stage in policy.get("canonical_stages", [])]
     _require(stage_id in stage_ids, f"unknown canonical stage: {stage_id}")
@@ -495,7 +497,11 @@ def authorize_asset_dispatch(
     return authorization
 
 
-def mark_awaiting_result_import(packet_path: Path | str) -> dict[str, Any]:
+def mark_awaiting_result_import(
+    packet_path: Path | str,
+    *,
+    receipt_path: Path | str | None = None,
+) -> dict[str, Any]:
     packet_file = Path(packet_path).resolve()
     packet = load_packet(packet_file)
     revision = packet["state_revision"]
@@ -509,7 +515,28 @@ def mark_awaiting_result_import(packet_path: Path | str) -> dict[str, Any]:
             authorization.get("job_sha256") == _sha256_json(authorization.get("job")),
             "asset production dispatch contract changed after authorization",
         )
-        _verify_dispatch_job_against_packet(packet, authorization["job"])
+        job = authorization["job"]
+        _verify_dispatch_job_against_packet(packet, job)
+        _require(receipt_path is not None, "asset production requires a post-dispatch media binding receipt")
+        receipt = _load_json(Path(receipt_path).resolve())
+        try:
+            verify_dispatch_receipt(job, receipt)
+        except DispatchReceiptError as exc:
+            raise BridgeError(f"dispatch receipt rejected: {exc}") from exc
+        packet["dispatch_receipt"] = {
+            "status": "CONFIRMED",
+            "receipt_sha256": _sha256_json(receipt),
+            "receipt": receipt,
+            "confirmed_at_utc": _utc_now(),
+        }
+        _event(
+            packet,
+            "ASSET_DISPATCH_RECEIPT_CONFIRMED",
+            {
+                "job_id": job.get("job_id"),
+                "receipt_sha256": packet["dispatch_receipt"]["receipt_sha256"],
+            },
+        )
     packet["status"] = "AWAITING_RESULT_IMPORT"
     _event(packet, "CHATGPT_STAGE_STARTED")
     _advance_revision(packet)
@@ -648,6 +675,21 @@ def verify_packet(packet_path: Path | str, *, repo_root: Path | str) -> dict[str
         )
         _verify_dispatch_job_against_packet(packet, job)
 
+        if packet["status"] in {"AWAITING_RESULT_IMPORT", "RESULT_REGISTERED", "USER_APPROVED"}:
+            receipt_record = packet.get("dispatch_receipt")
+            _require(isinstance(receipt_record, dict), "asset production packet is missing dispatch_receipt")
+            _require(receipt_record.get("status") == "CONFIRMED", "asset production dispatch receipt is not confirmed")
+            receipt = receipt_record.get("receipt")
+            _require(isinstance(receipt, dict), "asset production dispatch receipt payload is missing")
+            _require(
+                receipt_record.get("receipt_sha256") == _sha256_json(receipt),
+                "asset production dispatch receipt changed after confirmation",
+            )
+            try:
+                verify_dispatch_receipt(job, receipt)
+            except DispatchReceiptError as exc:
+                raise BridgeError(f"dispatch receipt rejected on resume: {exc}") from exc
+
     if packet["status"] == "USER_APPROVED":
         selected_id = packet.get("selected_result_asset_id")
         _require(bool(selected_id), "approved packet has no selected_result_asset_id")
@@ -698,8 +740,9 @@ def main() -> None:
     authorize_dispatch.add_argument("--packet", required=True)
     authorize_dispatch.add_argument("--job", required=True)
 
-    dispatched = sub.add_parser("dispatched", help="Mark that a user-triggered ChatGPT stage has started")
+    dispatched = sub.add_parser("dispatched", help="Confirm renderer dispatch and move to result import")
     dispatched.add_argument("--packet", required=True)
+    dispatched.add_argument("--receipt", help="Post-dispatch receipt JSON; required for ASSET_PRODUCTION")
 
     add_result = sub.add_parser("add-result", help="Copy and hash a real ChatGPT-produced result")
     add_result.add_argument("--packet", required=True)
@@ -745,7 +788,7 @@ def main() -> None:
         elif args.command == "authorize-dispatch":
             result = authorize_asset_dispatch(packet_path=args.packet, job_path=args.job)
         elif args.command == "dispatched":
-            result = mark_awaiting_result_import(args.packet)
+            result = mark_awaiting_result_import(args.packet, receipt_path=args.receipt)
         elif args.command == "add-result":
             result = register_result_asset(
                 packet_path=args.packet,
