@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/noru358/AutoPipeline/schemas/work_packet.schema.json",
+  "title": "AutoPipeline Durable Work Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "project_id",
+    "episode_id",
+    "stage_id",
+    "status",
+    "state_revision",
+    "created_at_utc",
+    "updated_at_utc",
+    "execution_snapshot",
+    "authority_snapshot",
+    "assets",
+    "approvals",
+    "events",
+    "next_action"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "packet_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "episode_id": {"type": "string", "minLength": 1},
+    "stage_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]+$"},
+    "status": {"enum": ["READY_FOR_CHATGPT", "AWAITING_RESULT_IMPORT", "RESULT_REGISTERED", "USER_APPROVED", "SUSPENDED"]},
+    "state_revision": {"type": "integer", "minimum": 1},
+    "created_at_utc": {"type": "string", "minLength": 1},
+    "updated_at_utc": {"type": "string", "minLength": 1},
+    "execution_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ai_mode", "additional_paid_ai_budget_krw", "allow_paid_fallback", "user_trigger_required", "unattended_subscription_invocation", "artifact_transfer"],
+      "properties": {
+        "ai_mode": {"const": "CHATGPT_SUBSCRIPTION_FIRST"},
+        "additional_paid_ai_budget_krw": {"const": 0},
+        "allow_paid_fallback": {"const": false},
+        "user_trigger_required": {"const": true},
+        "unattended_subscription_invocation": {"const": false},
+        "artifact_transfer": {"const": "MANUAL_IMPORT_UNTIL_VERIFIED"}
+      }
+    },
+    "authority_snapshot": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "size_bytes"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "size_bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["asset_id", "kind", "role", "media_type", "original_name", "stored_path", "sha256", "size_bytes", "locked", "registered_at_utc"],
+        "properties": {
+          "asset_id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["input", "result"]},
+          "role": {"type": "string", "minLength": 1},
+          "media_type": {"enum": ["image", "audio", "video", "other"]},
+          "original_name": {"type": "string", "minLength": 1},
+          "stored_path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "size_bytes": {"type": "integer", "minimum": 0},
+          "locked": {"type": "boolean"},
+          "registered_at_utc": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["approval_id", "actor", "decision", "asset_id", "sha256", "approved_at_utc"],
+        "properties": {
+          "approval_id": {"type": "string", "minLength": 1},
+          "actor": {"const": "USER"},
+          "decision": {"const": "APPROVED"},
+          "asset_id": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "approved_at_utc": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["seq", "at_utc", "type", "detail"],
+        "properties": {
+          "seq": {"type": "integer", "minimum": 1},
+          "at_utc": {"type": "string", "minLength": 1},
+          "type": {"type": "string", "minLength": 1},
+          "detail": {"type": "object"}
+        }
+      }
+    },
+    "selected_result_asset_id": {"type": "string", "minLength": 1},
+    "next_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "instruction"],
+      "properties": {
+        "type": {"enum": ["RUN_CHATGPT_ASSISTED_STAGE", "IMPORT_CHATGPT_RESULT", "REVIEW_RESULT", "ADVANCE_STAGE", "RESUME_USER_TRIGGER"]},
+        "instruction": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
