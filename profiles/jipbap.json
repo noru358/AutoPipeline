@@ -66,7 +66,7 @@
       ]
     },
     "ASSET_PRODUCTION": {
-      "intent": "Use the resolved visual-anchor route, bind actual domain-scoped media, require post-dispatch explicit-media receipt proof, and render only the current shot contract with observable appetite cues, entity allowlists, anatomy/contact geometry and meal continuity.",
+      "intent": "Resolve reusable person/environment assets first; author missing menu-specific FOOD/FOOD_STATE and interaction assets as needed; preserve accepted person identity instead of regenerating the person with every meal state; full-frame generation is exceptional.",
       "authority_refs": [
         "FOOD_STATE_SYSTEM.md",
         "MEAL_CONTEXT_SYSTEM.md",
@@ -75,7 +75,7 @@
       ]
     },
     "COMPOSITION": {
-      "intent": "Keep body lettering editable, protect the food focal area, and acquire/assemble the separate mandatory Instagram cover by BODY reuse, dedicated hero, or registered external import before finalization.",
+      "intent": "Assemble person/environment/food assets into deterministic BODY scenes, keep lettering editable, protect the food focal area, and assemble the separate mandatory cover before finalization.",
       "authority_refs": [
         "VISUAL_SYSTEM.md",
         "VOICE_SYSTEM.md"
@@ -89,4 +89,4 @@
       ]
     }
   }
-}
+}\n
