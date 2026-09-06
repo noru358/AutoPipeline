@@ -26,9 +26,93 @@ def load_job(path: Path) -> dict:
         raise GateError(f"invalid JSON: {path}: {exc}") from exc
 
 
+VISUAL_INFORMATION_OWNERS = {
+    "CHARACTER_REACTION",
+    "SCREEN_INFORMATION",
+    "PHYSICAL_ACTION",
+    "MIXED_WITH_DECLARED_PRIORITY",
+}
+SUBJECT_SCREEN_RELATIONS = {
+    "LOOKING_AT_SCREEN",
+    "HOLDING_NOT_LOOKING",
+    "NOT_APPLICABLE",
+}
+CAMERA_SCREEN_RELATIONS = {
+    "FRONT_OF_SUBJECT",
+    "OVER_SHOULDER",
+    "SUBJECT_POV",
+    "SIDE_OBLIQUE",
+    "REAR_OF_SUBJECT",
+    "SCREEN_CLOSEUP",
+}
+VIEWER_SCREEN_VISIBILITY = {"REQUIRED", "OPTIONAL", "FORBIDDEN"}
+UI_DELIVERY_MODES = {"RASTER_SHELL_ONLY", "VECTOR_OVERLAY", "NONE"}
+
+
+def _validate_visual_contract(job: dict) -> None:
+    contract = job.get("visual_contract")
+    _require(isinstance(contract, dict), "visual_contract is required")
+    owner = contract.get("visual_information_owner")
+    _require(owner in VISUAL_INFORMATION_OWNERS, "visual_contract: invalid visual_information_owner")
+
+    screen_bearing = contract.get("screen_bearing_prop")
+    _require(isinstance(screen_bearing, bool), "visual_contract: screen_bearing_prop must be boolean")
+    screen = contract.get("screen_contract")
+
+    if not screen_bearing:
+        _require(screen is None, "visual_contract: non-screen job must use screen_contract=null")
+        return
+
+    _require(isinstance(screen, dict), "visual_contract: screen-bearing job requires screen_contract")
+    _require(isinstance(screen.get("prop_id"), str) and screen["prop_id"].strip(), "screen_contract: prop_id required")
+    _require(screen.get("display_surface") == "FRONT", "screen_contract: display_surface must be FRONT")
+    _require(
+        screen.get("subject_screen_relation") in SUBJECT_SCREEN_RELATIONS,
+        "screen_contract: invalid subject_screen_relation",
+    )
+    _require(
+        screen.get("camera_screen_relation") in CAMERA_SCREEN_RELATIONS,
+        "screen_contract: invalid camera_screen_relation",
+    )
+    _require(
+        screen.get("viewer_screen_visibility") in VIEWER_SCREEN_VISIBILITY,
+        "screen_contract: invalid viewer_screen_visibility",
+    )
+    _require(
+        screen.get("ui_delivery_mode") in UI_DELIVERY_MODES,
+        "screen_contract: invalid ui_delivery_mode",
+    )
+    _require(
+        isinstance(screen.get("geometry_rule"), str) and screen["geometry_rule"].strip(),
+        "screen_contract: geometry_rule required",
+    )
+
+    # Generic physical invariant: if the subject is looking at a private screen and
+    # the camera is directly in front of the subject, requiring the audience to see
+    # that same display surface is contradictory. Use over-shoulder/POV/oblique
+    # geometry or keep audience screen visibility non-required.
+    if (
+        screen["subject_screen_relation"] == "LOOKING_AT_SCREEN"
+        and screen["camera_screen_relation"] == "FRONT_OF_SUBJECT"
+        and screen["viewer_screen_visibility"] == "REQUIRED"
+    ):
+        raise GateError(
+            "screen_contract: impossible shared visibility; subject looks at screen "
+            "while front camera also requires audience to see the display"
+        )
+
+    if owner == "SCREEN_INFORMATION":
+        _require(
+            screen["viewer_screen_visibility"] == "REQUIRED",
+            "screen_contract: SCREEN_INFORMATION requires viewer_screen_visibility=REQUIRED",
+        )
+
+
 def authorize(job: dict) -> str:
-    for key in ("job_id","requirements","renderer","supplied"):
+    for key in ("job_id","requirements","renderer","supplied","visual_contract"):
         _require(key in job, f"job missing {key}")
+
+    _validate_visual_contract(job)
 
     renderer = job["renderer"]
     supported_types = set(renderer.get("supported_media_types", []))
