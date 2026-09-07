@@ -57,6 +57,9 @@ def validate_policy(policy: dict) -> list[str]:
     _require(execution.get("asset_production_requires_bound_media_evidence") is True, "asset production must bind actual media evidence")
     _require(execution.get("asset_production_requires_visual_contract") is True, "asset production must bind a visual contract")
     _require(execution.get("asset_production_requires_dispatch_receipt") is True, "asset production must record a post-dispatch media binding receipt")
+    _require(execution.get("media_integrity_required_before_reference_binding") is True, "reference media must pass executable integrity validation before binding")
+    _require(execution.get("media_integrity_required_before_approval_or_composition") is True, "media integrity must precede approval/composition")
+    _require(execution.get("recorded_hash_alone_is_not_media_validation") is True, "recorded hash alone cannot count as media validation")
 
     continuity = policy["continuity_policy"]
     _require(
@@ -82,6 +85,7 @@ def validate_policy(policy: dict) -> list[str]:
         "high_risk_interaction_geometry_qc",
         "rejected_output_quarantine",
         "minimal_repair_scope",
+        "media_integrity_precedes_subjective_qc",
     }
     _require(isinstance(quality, dict), "quality_policy must be an object")
     _require(required_quality <= quality.keys(), f"quality_policy missing: {sorted(required_quality - quality.keys())}")
@@ -98,6 +102,7 @@ def validate_policy(policy: dict) -> list[str]:
     program_work = set(policy["program_responsibilities"])
     _require("persistent_project_state" in program_work, "program must own persistent project state")
     _require("approval_version_binding" in program_work, "program must bind approvals to versions")
+    _require("media_integrity_validation" in program_work, "program must own media integrity validation")
     _require("editable_text_ui_and_layout" in program_work, "program must own editable text/UI/layout")
     _require("export" in program_work, "program must own export")
     return stage_ids
