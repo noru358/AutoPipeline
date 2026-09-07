@@ -49,12 +49,15 @@ python -m unittest discover -s pipeline -p 'test_*.py'
 
 The initial policy uses user-triggered ChatGPT subscription work, sets additional paid AI budget to KRW 0, disables paid fallback, and requires suspend/resume when subscription usage is unavailable.
 
-## Deterministic final composition
+## Rendering architecture ownership
 
-Toon projects now use the boundary in `ASSET_COMPOSITION_CONTRACT.md`:
-generation authors missing assets; the default final frame is assembled from approved hash-bound assets.
+The parent provides reusable execution methods; **each child chooses its canonical render architecture**.
 
-Shared compositor:
+- `instatoon` may opt into the asset-composition boundary where its child authority says so.
+- `jipbap` V1 explicitly uses **SIX_PANEL_BOARD_FIRST**: one text-free six-panel board is generated jointly, then extraction / 4:5 page assembly / cover / lettering are deterministic.
+- `ASSET_COMPOSITION_CONTRACT.md` applies only to children or stages that explicitly opt into it. It is not a cross-project creative default.
+
+Shared compositor remains available for deterministic post-processing when a child uses it:
 
 ```bash
 python -m pipeline.compositor \
@@ -64,7 +67,7 @@ python -m pipeline.compositor \
   --output instatoon/episodes/E001/renders/slide_01_art.png
 ```
 
-Use `--project-root jipbap` for the food project. The child owns asset categories and visual semantics; the parent compositor owns byte verification, transforms, layer order and a composition receipt.
+For jipbap V1, do not interpret the compositor as permission to rebuild BODY art from PERSON/FOOD part assets. It may be used only for the deterministic presentation shell declared by `jipbap/JIPBAP_V1_SPEC.md`.
 
 ### Deterministic lettering
 
