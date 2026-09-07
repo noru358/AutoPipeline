@@ -115,6 +115,23 @@ Existing paid-provider adapters may remain in child code for future controlled
 use. They are not the default execution path and must not be invoked by a
 subscription-limit fallback.
 
+## 4.5 Media-byte integrity boundary
+
+A recorded path, recorded SHA-256 string, thumbnail preview, or successful header-only image open is
+not sufficient evidence that raster media is usable.
+
+Before a raster can condition generation, receive an approval/lock, or enter deterministic
+composition, the owning child must execute a fail-closed media-integrity gate against the actual
+repository bytes. For PNG media this must include exact hash comparison, signature/format validation,
+full pixel decode rather than header inspection only, recorded dimensions, and any declared alpha
+contract.
+
+A mismatch invalidates the affected binary and approvals that depend on those bytes at minimum scope.
+It does not silently erase higher-level creative decisions that can be rebound to repaired bytes.
+
+This is a shared program invariant because stale/corrupt-byte approval is an artifact-identity and
+data-integrity failure, not a project-specific creative preference.
+
 ## 5. Rule promotion
 
 Apply feedback at the narrowest correct scope:
@@ -133,7 +150,7 @@ must remember every past episode.
 Cross-project automation may not dictate a project's art style, emotional voice or food/story semantics, but it does own a minimal quality envelope for sequential visual outputs and their approved source assets.
 
 Shared invariants:
-- hard output/identity/geometry contracts are checked before subjective style or taste review;
+- media-byte integrity and hard output/identity/geometry contracts are checked before subjective style or taste review;
 - a complete composed art sequence receives sequence-level QC before final art approval/export, not only independent asset or frame checks;
 - sequence review is viewer-perceived and beat-aware: repeated camera side/height, shot distance, subject/body orientation or gaze that comes from renderer defaults is a defect when a story-valid alternative exists;
 - fixed left/right/front quotas are forbidden as a substitute for visual direction;
