@@ -4,12 +4,8 @@
   "content_family": "OBSERVATION_SENSORY",
   "creative_authority_root": "jipbap",
   "creative_authority_refs": [
-    "CONTENT_SYSTEM.md",
-    "FOOD_STATE_SYSTEM.md",
-    "MEAL_CONTEXT_SYSTEM.md",
-    "VISUAL_SYSTEM.md",
-    "VOICE_SYSTEM.md",
-    "PRODUCTION_PROTOCOL.md"
+    "CURRENT_STATE.md",
+    "JIPBAP_V1_SPEC.md"
   ],
   "episode_id_pattern": "^[0-9]{3,}$",
   "products": [
@@ -36,56 +32,46 @@
   ],
   "stage_overrides": {
     "WORK_RESEARCH": {
-      "intent": "Study complete food works for focal scale, appetite, silence, rhythm and visual restraint.",
+      "intent": "Study complete food-comic works only to improve appetite, rhythm, restraint and readable six-panel pacing. Do not promote observations into hard gates without repeated evidence.",
       "authority_refs": [
-        "CONTENT_SYSTEM.md",
-        "VISUAL_SYSTEM.md"
+        "JIPBAP_V1_SPEC.md"
       ]
     },
     "RADAR": {
-      "intent": "Collect concrete meal moments with enough context to render a believable food state.",
+      "intent": "Choose a concrete menu/moment capable of sustaining six publishable sensory beats without procedural filler.",
       "authority_refs": [
-        "CONTENT_SYSTEM.md",
-        "MEAL_CONTEXT_SYSTEM.md"
+        "JIPBAP_V1_SPEC.md"
       ]
     },
     "EDITORIAL": {
-      "intent": "Define the PROXY_EATER audience promise and choose a menu-specific appetite arc with concrete sensory payoffs rather than mere chronological eating steps.",
+      "intent": "Define the PROXY_EATER appetite arc and map exactly six publishable beats. Slot roles remain story-dependent.",
       "authority_refs": [
-        "CONTENT_SYSTEM.md",
-        "VOICE_SYSTEM.md"
+        "JIPBAP_V1_SPEC.md"
       ]
     },
     "STORYBOARD": {
-      "intent": "Design the PROXY_EATER appetite arc, food-state transitions, entity visibility, background scope, visual delta rhythm, required PERSON/FOOD/contact assets and high-risk interaction geometry.",
+      "intent": "Plan one six-cell board with minimal food-state/action continuity while leaving camera, pose, expression and per-cell composition fluid.",
       "authority_refs": [
-        "CONTENT_SYSTEM.md",
-        "FOOD_STATE_SYSTEM.md",
-        "MEAL_CONTEXT_SYSTEM.md",
-        "VISUAL_SYSTEM.md"
+        "JIPBAP_V1_SPEC.md"
       ]
     },
     "ASSET_PRODUCTION": {
-      "intent": "Resolve reusable person/environment assets first; author missing menu-specific FOOD/FOOD_STATE and interaction assets as needed; preserve accepted person identity instead of regenerating the person with every meal state; full-frame generation is exceptional.",
+      "intent": "Compatibility stage name only: for JIPBAP_V1 this means generate the single text-free six-panel master board with bound style references. It does not mean asset resolution, ASSET_GAP authoring, or deterministic PERSON/FOOD part composition.",
       "authority_refs": [
-        "FOOD_STATE_SYSTEM.md",
-        "MEAL_CONTEXT_SYSTEM.md",
-        "VISUAL_SYSTEM.md",
-        "PRODUCTION_PROTOCOL.md"
+        "CURRENT_STATE.md",
+        "JIPBAP_V1_SPEC.md"
       ]
     },
     "COMPOSITION": {
-      "intent": "Assemble person/environment/food assets into deterministic BODY scenes, keep lettering editable, protect the food focal area, and assemble the separate mandatory cover before finalization.",
+      "intent": "Deterministically extract the accepted board, fit six 4:5 BODY pages, assemble the separate cover, and apply editable lettering/inner-thought layers. Do not regenerate accepted art for layout-only defects.",
       "authority_refs": [
-        "VISUAL_SYSTEM.md",
-        "VOICE_SYSTEM.md"
+        "JIPBAP_V1_SPEC.md"
       ]
     },
     "QC": {
-      "intent": "Validate approved asset domains, PERSON identity, anatomy/contact, food state and meal-context first, then appetite/proxy-eater and viewer-perceived sequence QC; composition templates must be locked before production completion.",
+      "intent": "Apply only the JIPBAP_V1 publish-blocking hard fails to the master board; treat non-blocking polish issues as soft score. Review the completed carousel once before export.",
       "authority_refs": [
-        "PRODUCTION_PROTOCOL.md",
-        "VISUAL_SYSTEM.md"
+        "JIPBAP_V1_SPEC.md"
       ]
     }
   }
