@@ -1,5 +1,5 @@
 {
-  "profile_version": "1.0",
+  "profile_version": "1.1",
   "project_id": "jipbap",
   "content_family": "OBSERVATION_SENSORY",
   "creative_authority_root": "jipbap",
@@ -50,29 +50,47 @@
       ]
     },
     "STORYBOARD": {
-      "intent": "Plan one six-cell board with minimal food-state/action continuity while leaving camera, pose, expression and per-cell composition fluid.",
+      "intent": "Plan exactly six publishable beats, copy and minimal continuity, then stop for STORYBOARD_USER_GATE. This user gate is permanent. Camera/pose/expression/per-cell composition remain fluid.",
       "authority_refs": [
         "JIPBAP_V1_SPEC.md"
       ]
     },
     "ASSET_PRODUCTION": {
-      "intent": "Compatibility stage name only: for JIPBAP_V1 this means generate the single text-free six-panel master board with bound style references. It does not mean asset resolution, ASSET_GAP authoring, or deterministic PERSON/FOOD part composition.",
+      "intent": "Compatibility stage name only: after storyboard approval, continue in the same ChatGPT conversation. Attach only the approved JIPBAP_STYLE_CARRIER_V1 once, generate one text-free 2x3 master board, and apply V1 hard-fail QC. Raw creative references are not normal production renderer inputs. While carrier calibration is active, expose one temporary BOARD_STYLE_USER_GATE.",
       "authority_refs": [
         "CURRENT_STATE.md",
         "JIPBAP_V1_SPEC.md"
       ]
     },
     "COMPOSITION": {
-      "intent": "Deterministically extract the accepted board, fit six 4:5 BODY pages, assemble the separate cover, and apply editable lettering/inner-thought layers. Do not regenerate accepted art for layout-only defects.",
+      "intent": "After BOARD PASS, continue in the same conversation. Deterministically extract six cells, fit 4:5 BODY pages, assemble the cover, and apply editable lettering. Layout/copy-only defects never authorize stochastic board regeneration.",
       "authority_refs": [
         "JIPBAP_V1_SPEC.md"
       ]
     },
     "QC": {
-      "intent": "Apply only the JIPBAP_V1 publish-blocking hard fails to the master board; treat non-blocking polish issues as soft score. Review the completed carousel once before export.",
+      "intent": "Use only V1 publish-blocking hard fails. In steady state, user gates are storyboard approval and final publish approval; the board/style gate is temporary and removable after carrier stability is proven.",
       "authority_refs": [
         "JIPBAP_V1_SPEC.md"
       ]
     }
+  },
+  "session_protocol": {
+    "production_chat": "ONE_CHAT_MULTI_TURN",
+    "permanent_user_gates": [
+      "STORYBOARD_USER_GATE",
+      "FINAL_PUBLISH_GATE"
+    ],
+    "temporary_user_gates": [
+      "BOARD_STYLE_USER_GATE_WHILE_CARRIER_CALIBRATING"
+    ],
+    "new_chat_only_on": [
+      "context_or_product_limit_risk",
+      "observed_image_runtime_contamination",
+      "repeated_stale_semantic_template",
+      "artifact_or_approval_identity_uncertainty"
+    ],
+    "production_attachment_policy": "ATTACH_ONLY_JIPBAP_STYLE_CARRIER_V1_ONCE_AFTER_STORYBOARD_APPROVAL",
+    "raw_reference_policy": "RAW_CREATIVE_REFERENCES_NOT_NORMAL_PRODUCTION_RENDERER_INPUT"
   }
 }
